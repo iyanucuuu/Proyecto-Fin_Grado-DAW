@@ -433,8 +433,9 @@
   box-shadow: 0 8px 32px rgba(0,0,0,0.5);
   cursor: pointer;
   animation: toastIn 0.3s ease;
-  white-space: nowrap;
-  max-width: 90vw;
+  white-space: normal;
+  text-align: center;
+  max-width: min(90vw, 360px);
 }
 
 @keyframes toastIn {
@@ -509,6 +510,9 @@
   gap: 12px;
   margin-top: 4px;
 }
+/* Sincronizar breakpoints del skeleton con los de .logros-grid */
+@media (max-width: 900px) { .sk-logros { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 600px) { .sk-logros { grid-template-columns: repeat(2, 1fr); } }
 .sk-logro {
   aspect-ratio: 1;
   border-radius: 12px;

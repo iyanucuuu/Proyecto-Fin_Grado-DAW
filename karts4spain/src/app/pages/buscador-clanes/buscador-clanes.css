@@ -118,7 +118,7 @@
 .clanes-header { display: flex; flex-direction: column; gap: 4px; }
 
 .clanes-titulo {
-  font-size: 1.6rem;
+  font-size: clamp(1.2rem, 4vw, 1.6rem);
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 2px;
@@ -252,9 +252,18 @@
 .btn-unirse:disabled { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.4); cursor: not-allowed; }
 
 /* ── RESPONSIVE ──────────────────────────────────────────── */
+@media (max-width: 1050px) {
+  /* Reducir sidebar antes de colapsar para dar más espacio al grid de clanes */
+  .buscador-layout { grid-template-columns: minmax(220px, 260px) 1fr; gap: 20px; }
+}
+
 @media (max-width: 900px) {
   .buscador-layout { grid-template-columns: 1fr; }
   .filtros-panel { position: static; }
+}
+
+@media (max-width: 480px) {
+  .buscador-layout { padding: 16px; }
 }
 
 /* ── MODO CLARO ── */

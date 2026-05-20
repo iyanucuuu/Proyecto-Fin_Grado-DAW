@@ -373,7 +373,7 @@
   margin: 0 auto;
   padding: 0 28px 60px;
   gap: 0;
-  min-height: 600px;
+  min-height: min(600px, 80vh);
   align-items: start;
 }
 
@@ -394,7 +394,7 @@
 /* Sidebar */
 .dm-sidebar {
   border-right: 1px solid var(--border);
-  min-height: 600px;
+  min-height: min(600px, 80vh);
   display: flex;
   flex-direction: column;
   padding-top: 20px;
@@ -532,7 +532,7 @@
 .dm-panel {
   display: flex;
   flex-direction: column;
-  min-height: 600px;
+  min-height: min(600px, 80vh);
   max-height: 80vh;
 }
 
@@ -952,7 +952,13 @@
 [data-theme="light"] .dm-burbuja.suya .dm-burbuja-texto { background: #fff; border-color: rgba(0,0,0,0.1); color: #18100f; }
 [data-theme="light"] .modal-box { background: #fff; }
 
-/* ── RESPONSIVE ── */
+/* ── RESPONSIVE TABLET ── */
+@media (max-width: 900px) {
+  .hub-layout { grid-template-columns: 200px 1fr; }
+  .dm-layout { grid-template-columns: 260px 1fr; }
+}
+
+/* ── RESPONSIVE MÓVIL ── */
 @media (max-width: 768px) {
   .hub-layout { grid-template-columns: 1fr; padding: 16px; }
   .hub-filtros { position: static; }
@@ -960,7 +966,13 @@
   .hub-tabs { padding: 0 12px; overflow-x: auto; }
   .hub-tab { padding: 12px 16px; font-size: 0.75rem; white-space: nowrap; }
   .dm-layout { grid-template-columns: 1fr; padding: 0 0 40px; }
-  .dm-sidebar { border-right: none; border-bottom: 1px solid var(--border); min-height: auto; max-height: 260px; }
+  .dm-sidebar {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    min-height: auto;
+    max-height: 260px;
+  }
   .dm-panel { min-height: 400px; }
-  .dm-chat-mensajes { max-height: calc(100vh - 380px); }
+  /* Evitar que el área de mensajes sea invisible en pantallas muy bajas */
+  .dm-chat-mensajes { max-height: max(200px, calc(100vh - 380px)); }
 }

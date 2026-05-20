@@ -35,6 +35,7 @@
   padding: 28px 32px;
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 22px;
   max-width: 1000px;
   margin: 0 auto;
@@ -189,8 +190,8 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  min-height: 420px;
-  max-height: 540px;
+  min-height: min(420px, 50vh);
+  max-height: min(540px, 60vh);
   scroll-behavior: smooth;
 }
 

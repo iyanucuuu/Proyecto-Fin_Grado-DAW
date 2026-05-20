@@ -35,7 +35,7 @@
   border-bottom: 1px solid rgba(255,255,255,0.05);
   padding: 14px 36px;
   position: sticky;
-  top: 71px;
+  top: var(--navbar-height, 71px);
   z-index: 100;
   backdrop-filter: blur(12px);
 }
@@ -516,7 +516,9 @@
   box-shadow: 0 8px 30px rgba(0,0,0,0.5);
   animation: toast-in 0.3s ease;
   pointer-events: none;
-  white-space: nowrap;
+  white-space: normal;
+  text-align: center;
+  max-width: min(90vw, 380px);
 }
 @keyframes toast-in {
   from { opacity: 0; transform: translateX(-50%) translateY(16px); }

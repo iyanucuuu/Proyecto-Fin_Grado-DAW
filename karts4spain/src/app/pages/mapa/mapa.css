@@ -371,7 +371,10 @@ html, body { overflow-x: hidden; }
 /* ── RESPONSIVE ── */
 @media (max-width: 700px) {
   .filter-dashboard { padding: 16px 14px 18px; }
-  .filters-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .filter-grid { grid-template-columns: 1fr 1fr; gap: 8px; } /* fix: era .filters-grid (typo) */
   .filter-actions { flex-direction: column; }
-  .map-section { height: 55vh; }
+  .map-section { height: 55vh; padding: 12px; }
+  #map { height: 55vh; }
+  .canarias-inset { width: 150px; bottom: 12px; left: 8px; }
+  .canarias-map-wrap { height: 100px; }
 }

@@ -25,7 +25,7 @@
   letter-spacing: 1.5px; text-transform: uppercase;
   padding: 4px 12px; border-radius: 50px; width: fit-content;
 }
-.rank-title { font-size: 2.2rem; font-weight: 900; font-style: italic; color: #eeeae6; margin: 0; }
+.rank-title { font-size: clamp(1.4rem, 4vw, 2.2rem); font-weight: 900; font-style: italic; color: #eeeae6; margin: 0; }
 .rank-sub { color: rgba(238,234,230,0.45); font-size: 0.9rem; margin: 0; }
 
 /* Mi posicion */
@@ -291,10 +291,17 @@
 /* RESPONSIVE */
 @media (max-width: 640px) {
   .rank-hero { padding: 32px 20px 24px; }
-  .rank-title { font-size: 1.6rem; }
   .rank-filtros { padding: 20px 16px 12px; }
   .rank-tabla-wrap { padding: 0 16px 24px; }
   .rank-tabla td { padding: 10px 8px; }
   .det-stats { grid-template-columns: repeat(2,1fr); }
   .modal-box { padding: 20px 16px; }
+  /* Selector de temporada: ancho completo en móvil para evitar overflow */
+  .rank-select { min-width: 100%; }
+  .det-stat-val { font-size: 1.1rem; }
+}
+
+@media (max-width: 480px) {
+  /* Asegurar que la sección de mi posición se apile bien */
+  .rank-mia { width: 100%; text-align: center; }
 }

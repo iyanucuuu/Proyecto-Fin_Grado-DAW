@@ -342,6 +342,11 @@
 [data-theme="light"] .pub-muted { color: rgba(24,16,15,0.45); }
 
 /* ─── RESPONSIVE ─────────────────────────────────────────────────────────────── */
+@media (max-width: 1050px) {
+  /* Reducir sidebar a un rango flexible antes de colapsar */
+  .perfil-publico-layout { grid-template-columns: minmax(260px, 300px) 1fr; }
+}
+
 @media (max-width: 900px) {
   .perfil-publico-layout {
     grid-template-columns: 1fr;
@@ -351,8 +356,14 @@
   }
   .sidebar-pub { order: -1; padding: 28px 20px; }
   .stats-grid  { gap: 12px; }
+  .section-pub { padding: 20px 16px; }
 }
 
 @media (max-width: 600px) {
   .logros-pub-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 380px) {
+  /* En pantallas muy estrechas, reducir a 2 columnas en logros */
+  .logros-pub-grid { grid-template-columns: repeat(2, 1fr); }
 }

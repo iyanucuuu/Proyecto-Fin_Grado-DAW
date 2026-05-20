@@ -545,6 +545,9 @@
   .conocer-layout { grid-template-columns: 1fr; }
   .filtros-panel { position: static; }
   .pilotos-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+  /* Tabs: evitar desbordamiento horizontal en pantallas pequeñas */
+  .page-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .page-tab { padding: 8px 14px; letter-spacing: 0.7px; white-space: nowrap; }
 }
 
 /* ─── POPUP PERFIL AMIGO ────────────────────────────────────────────────────── */
