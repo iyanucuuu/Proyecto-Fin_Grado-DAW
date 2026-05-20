@@ -1,0 +1,531 @@
+/* --- RESET Y BASE --- */
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+
+
+/* --- LAYOUT --- */
+.profile-layout {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 36px;
+    max-width: 1200px;
+    margin: 48px auto;
+    padding: 0 24px;
+    align-items: start;
+}
+
+.stats-container { display: flex; flex-direction: column; gap: 28px; }
+
+/* --- TARJETAS (Izquierda) --- */
+.section-card { background: rgba(0, 0, 0, 0.3); padding: 30px 32px; border-radius: 18px; border-left: 5px solid #e10600; }
+
+/* Escudería section más grande */
+.escuderia-card { padding: 40px 44px; }
+
+.section-title {
+    font-size: 1.15rem;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    font-style: italic;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    background: linear-gradient(90deg, #ffffff 0%, #ff6b6b 60%, #e10600 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: none;
+    filter: drop-shadow(0 2px 4px rgba(225, 6, 0, 0.4));
+}
+
+/* AMIGOS */
+.amigos-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+
+.amigo-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.amigo-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #e10600, #ff4444);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: white;
+  border: 3px solid rgba(255,255,255,0.15);
+  overflow: hidden;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.amigo-avatar:hover { border-color: #e10600; transform: scale(1.08); }
+.amigo-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.amigo-nombre {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(255,255,255,0.85);
+  max-width: 70px;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* LOGROS */
+.logros-hint {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.45);
+  margin-bottom: 16px;
+}
+.logros-hint-tip { color: rgba(255,255,255,0.25); font-style: italic; }
+
+.logros-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.logro-mini {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 14px 10px;
+  border-radius: 12px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  transition: border-color 0.2s, transform 0.2s, opacity 0.2s;
+  position: relative;
+}
+
+.logro-mini.desbloqueado { cursor: default; }
+.logro-mini.desbloqueado:hover {
+  border-color: #e10600;
+  transform: translateY(-2px);
+}
+
+.logro-mini.locked {
+  opacity: 0.4;
+  filter: grayscale(1);
+  cursor: pointer;
+}
+.logro-mini.locked:hover {
+  opacity: 0.65;
+  filter: grayscale(0.5);
+  border-color: rgba(255,255,255,0.3);
+  transform: translateY(-1px);
+}
+
+.logro-img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.logro-icon       { font-size: 1.8rem; color: #e10600; }
+.logro-icon-lock  { font-size: 1.5rem; color: rgba(255,255,255,0.4); }
+
+.logro-nombre {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #fff;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.logro-fecha {
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.3);
+  margin: 0;
+}
+
+/* ─── BOCADILLO LOGRO BLOQUEADO ─────────────────────────────────────────────── */
+.logro-bocata-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 1100;
+  backdrop-filter: blur(2px);
+}
+
+.logro-bocata {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1101;
+  background: #1a1a1a;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-top: 3px solid #e10600;
+  border-radius: 16px;
+  padding: 32px 28px 24px;
+  width: min(340px, 90vw);
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  animation: bocataIn 0.2s ease;
+}
+
+@keyframes bocataIn {
+  from { opacity: 0; transform: translate(-50%, -48%) scale(0.95); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+.logro-bocata-close {
+  position: absolute;
+  top: 12px; right: 14px;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.4);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.logro-bocata-close:hover { color: #fff; }
+
+.lb-icono {
+  width: 70px; height: 70px;
+  background: rgba(225,6,0,0.12);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px;
+  border: 2px solid rgba(225,6,0,0.25);
+}
+.lb-img       { width: 44px; height: 44px; object-fit: contain; opacity: 0.6; filter: grayscale(1); }
+.lb-lock-icon { font-size: 1.8rem; color: rgba(255,255,255,0.35); }
+
+.lb-nombre {
+  font-size: 1rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #fff;
+  margin-bottom: 8px;
+  font-style: italic;
+}
+
+.lb-desc {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.lb-progreso-wrap { text-align: left; }
+
+.lb-progreso-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.45);
+  margin-bottom: 6px;
+}
+
+.lb-progreso-pct { font-weight: 700; color: rgba(255,255,255,0.6); }
+
+.lb-progreso-track {
+  width: 100%;
+  height: 8px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 99px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.lb-progreso-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #e10600, #ff4444);
+  border-radius: 99px;
+  transition: width 0.4s ease;
+  min-width: 0;
+}
+
+.lb-hint {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.3);
+  text-align: center;
+  font-style: italic;
+  margin-top: 6px;
+}
+.lb-desbloqueado-info {
+  display: flex; align-items: center; gap: 8px;
+  font-size: .78rem; color: rgba(255,255,255,.6);
+  margin-top: 10px; justify-content: center;
+}
+/* ESCUDERIA */
+.escuderia-header-box { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
+.escuderia-logo-display { font-size: 3.5rem; background: rgba(255,255,255,0.1); padding: 16px 18px; border-radius: 14px; flex-shrink: 0; }
+.escuderia-info { flex: 1; }
+.escuderia-name { font-size: 1.25rem; font-style: italic; text-transform: uppercase; font-weight: 900; color: #fff; letter-spacing: 1px; }
+.btn-ir-escuderia { margin-left: auto; padding: 12px 20px; font-size: 0.9rem; white-space: nowrap; width: auto; }
+
+/* LISTAS */
+.list-item { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.list-item:last-child { border-bottom: none; }
+
+/* --- ASIDE (DERECHA - GRIS) --- */
+.sidebar-card {
+    background: #2b2b2b;
+    border-left: 5px solid #e10600;
+    padding: 40px 30px;
+    border-radius: 15px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 10px 10px 30px rgba(0,0,0,0.3);
+}
+
+.avatar-perfil {
+    width: 140px; height: 140px;
+    background: linear-gradient(45deg, #e10600, #ff4444);
+    border-radius: 20px; margin: 0 auto 20px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3rem; font-weight: bold; color: white;
+    border: 4px solid rgba(255,255,255,0.1);
+}
+.avatar-perfil img { width: 100%; height: 100%; object-fit: cover; border-radius: 16px; }
+
+.username-title { font-style: italic; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+.small-muted { color: rgba(255,255,255,0.5); font-size: 0.9rem; margin-bottom: 15px; }
+.badge-comunidad { background: #e10600; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; display: inline-block; }
+.fecha-creacion { color: rgba(255,255,255,0.4); font-size: 0.78rem; margin-top: 10px; }
+
+.btn-editar-perfil { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 8px 15px; border-radius: 20px; cursor: pointer; margin-bottom: 20px; transition: 0.3s; }
+.btn-editar-perfil:hover { background: white; color: black; }
+
+/* ─── MODO CLARO ──────────────────────────────────────────────────────────── */
+[data-theme="light"] .section-card {
+  background: #ffffff !important;
+  border-color: rgba(200,0,10,0.15) !important;
+  box-shadow: 0 2px 14px rgba(0,0,0,0.06) !important;
+}
+
+[data-theme="light"] .section-title {
+  background: linear-gradient(90deg, #18100f 0%, #8b0000 60%, #c8000a 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  filter: none !important;
+}
+
+[data-theme="light"] .escuderia-name { color: #18100f !important; }
+[data-theme="light"] .list-item { border-bottom-color: rgba(0,0,0,0.08) !important; }
+[data-theme="light"] .logro-mini {
+  background: rgba(0,0,0,0.04) !important;
+  border-color: rgba(0,0,0,0.08) !important;
+}
+[data-theme="light"] .logro-nombre { color: #18100f !important; }
+[data-theme="light"] .logro-fecha { color: rgba(24,16,15,0.35) !important; }
+[data-theme="light"] .logros-hint { color: rgba(24,16,15,0.45) !important; }
+[data-theme="light"] .logro-bocata { background: #fff !important; border-color: rgba(0,0,0,0.1) !important; }
+[data-theme="light"] .lb-nombre { color: #18100f !important; }
+[data-theme="light"] .lb-desc { color: rgba(24,16,15,0.6) !important; }
+[data-theme="light"] .lb-progreso-track { background: rgba(0,0,0,0.08) !important; }
+
+/* ─── RESPONSIVE logros 4 cols → 3 → 2 ──────────────────────────────────────── */
+@media (max-width: 900px) {
+  .logros-grid { grid-template-columns: repeat(3, 1fr); }
+}
+[data-theme="light"] .escuderia-logo-display { background: rgba(0,0,0,0.06) !important; }
+[data-theme="light"] .amigo-nombre { color: rgba(24,16,15,0.85) !important; }
+[data-theme="light"] .amigo-avatar { border-color: rgba(200,0,10,0.25) !important; }
+
+/* ─── BOTONES ────────────────────────────────────────────────────────────── */
+.botones-clan { display: flex; flex-direction: column; gap: 10px; }
+
+.btn-clan-racing {
+    background: #e10600; color: white; border: none; padding: 12px; width: 100%;
+    font-weight: bold; text-transform: uppercase; font-style: italic; cursor: pointer;
+    border-radius: 5px; transition: 0.3s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn-clan-racing:hover { background: white; color: #e10600; }
+
+.btn-clan-secondary {
+    background: transparent; color: white; border: 2px solid rgba(255,255,255,0.3);
+    padding: 11px; width: 100%; font-weight: bold; text-transform: uppercase;
+    font-style: italic; cursor: pointer; border-radius: 5px; transition: 0.3s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn-clan-secondary:hover { border-color: #e10600; color: #e10600; }
+
+.btn-logout-racing {
+    background: transparent; border: 2px solid #e10600; color: white;
+    padding: 12px; border-radius: 5px; font-weight: bold; cursor: pointer;
+    transition: 0.3s; width: 100%; margin-top: 30px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn-logout-racing:hover { background: #e10600; }
+
+/* ─── RESPONSIVE ───────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .profile-layout {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    margin: 24px auto;
+    padding: 0 16px;
+  }
+  .sidebar-card { order: -1; padding: 28px 20px; }
+  .section-card { padding: 20px 18px; }
+  .escuderia-card { padding: 24px 20px; }
+}
+
+@media (max-width: 600px) {
+  .logros-grid { grid-template-columns: repeat(2, 1fr); }
+  .escuderia-header-box { flex-direction: column; align-items: flex-start; }
+  .btn-ir-escuderia { margin-left: 0; width: 100%; }
+}
+
+/* ─── LOGROS BADGE (sidebar) ───────────────────────────────────────────────── */
+.logros-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(225, 6, 0, 0.15);
+  border: 1px solid rgba(225, 6, 0, 0.35);
+  color: #ff6b6b;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 20px;
+  margin-top: 10px;
+  letter-spacing: 0.4px;
+}
+.logros-badge i { font-size: 0.8rem; }
+
+[data-theme="light"] .logros-badge {
+  background: rgba(225,6,0,0.08) !important;
+  border-color: rgba(225,6,0,0.25) !important;
+  color: #c8000a !important;
+}
+
+/* ─── TOAST LOGRO NUEVO ────────────────────────────────────────────────────── */
+.toast-logro {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #1a1a1a 0%, #2a1010 100%);
+  border: 1px solid rgba(225,6,0,0.5);
+  border-left: 4px solid #e10600;
+  color: #fff;
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  z-index: 2000;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  cursor: pointer;
+  animation: toastIn 0.3s ease;
+  white-space: nowrap;
+  max-width: 90vw;
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(16px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+[data-theme="light"] .toast-logro {
+  background: linear-gradient(135deg, #fff 0%, #fff5f5 100%) !important;
+  color: #18100f !important;
+  border-color: rgba(225,6,0,0.4) !important;
+  border-left-color: #e10600 !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15) !important;
+}
+
+/* ─── SKELETON LOADER ──────────────────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position:  600px 0; }
+}
+
+.skeleton-card .sk-title,
+.skeleton-card .sk-line,
+.skeleton-card .sk-avatar,
+.skeleton-card .sk-avatar-big,
+.skeleton-card .sk-logro {
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.06) 0%,
+    rgba(255,255,255,0.14) 50%,
+    rgba(255,255,255,0.06) 100%
+  );
+  background-size: 600px 100%;
+  animation: shimmer 1.4s infinite linear;
+  border-radius: 8px;
+}
+
+.skeleton-card { pointer-events: none; }
+
+.sk-title  { height: 18px; width: 55%; margin-bottom: 20px; }
+
+.sk-line   { height: 13px; margin-bottom: 10px; border-radius: 6px; }
+.sk-line.w70 { width: 70%; }
+.sk-line.w60 { width: 60%; }
+.sk-line.w50 { width: 50%; }
+.sk-line.w40 { width: 40%; }
+.sk-line.w30 { width: 30%; }
+
+.sk-avatares {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+.sk-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.sk-avatar-big {
+  width: 140px;
+  height: 140px;
+  border-radius: 20px;
+  margin: 0 auto 8px;
+}
+
+.sk-logros {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 4px;
+}
+.sk-logro {
+  aspect-ratio: 1;
+  border-radius: 12px;
+}
+
+/* Light mode skeleton */
+[data-theme="light"] .skeleton-card .sk-title,
+[data-theme="light"] .skeleton-card .sk-line,
+[data-theme="light"] .skeleton-card .sk-avatar,
+[data-theme="light"] .skeleton-card .sk-avatar-big,
+[data-theme="light"] .skeleton-card .sk-logro {
+  background: linear-gradient(
+    90deg,
+    rgba(0,0,0,0.05) 0%,
+    rgba(0,0,0,0.1) 50%,
+    rgba(0,0,0,0.05) 100%
+  );
+  background-size: 600px 100%;
+  animation: shimmer 1.4s infinite linear;
+}

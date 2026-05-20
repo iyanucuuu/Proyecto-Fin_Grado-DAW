@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs grep *)",
+      "mcp__f83f7574-3afd-400e-9b87-d915a4e17d0f__list_projects",
+      "mcp__f83f7574-3afd-400e-9b87-d915a4e17d0f__apply_migration",
+      "mcp__f83f7574-3afd-400e-9b87-d915a4e17d0f__execute_sql",
+      "Bash(npx ng *)",
+      "mcp__f83f7574-3afd-400e-9b87-d915a4e17d0f__list_tables",
+      "Bash(grep -E \"\\\\.json$\")",
+      "WebSearch",
+      "WebFetch(domain:wikikarting.com)",
+      "WebFetch(domain:www.motorlandaragon.com)",
+      "WebFetch(domain:overpass-api.de)",
+      "WebFetch(domain:tarracokarting.com)",
+      "WebFetch(domain:www.ociokart.com)",
+      "Bash(npm install *)"
+    ]
+  }
+}

@@ -1,0 +1,30 @@
+services:
+
+  # ── Backend: Spring Boot ──────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ../../karts4spain-backend   # ajusta al nombre de tu carpeta del backend
+      dockerfile: Dockerfile
+    container_name: karts4spain-backend
+    environment:
+      SPRING_DATASOURCE_URL:      ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+  # ── Frontend: Angular + Nginx ─────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ../                          # raíz del proyecto Angular
+      dockerfile: docker/frontend/Dockerfile
+      args:
+        SUPABASE_URL: ${SUPABASE_URL}
+        SUPABASE_KEY: ${SUPABASE_KEY}
+    container_name: karts4spain-frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+    restart: unless-stopped

@@ -1,0 +1,109 @@
+<app-header></app-header>
+
+<div class="buscador-layout">
+
+  <!-- PANEL DE FILTROS -->
+  <aside class="filtros-panel">
+    <h2 class="filtros-titulo"><i class="bi bi-funnel-fill"></i> FILTROS</h2>
+
+    <div class="filtro-grupo">
+      <label>Buscar por nombre</label>
+      <input type="text" [(ngModel)]="filtroNombre" (ngModelChange)="aplicarFiltros()"
+             placeholder="Nombre de la escudería..." class="filtro-input">
+    </div>
+
+    <div class="filtro-grupo">
+      <label>Comunidad Autónoma</label>
+      <select [(ngModel)]="filtroComunidad" class="filtro-input">
+        <option value="">Todas</option>
+        <option *ngFor="let c of comunidades" [value]="c">{{ c }}</option>
+      </select>
+      <button class="btn-buscar" (click)="buscar()">BUSCAR</button>
+    </div>
+
+    <div class="filtro-grupo">
+      <label>Tamaño máximo de la escudería</label>
+      <div class="rango-row">
+        <span>Min: {{ filtroMiembrosMin }}</span>
+        <input type="range" min="0" max="50" [(ngModel)]="filtroMiembrosMin" (ngModelChange)="aplicarFiltros()">
+      </div>
+      <div class="rango-row">
+        <span>Max: {{ filtroMiembrosMax || '∞' }}</span>
+        <input type="range" min="1" max="50" [(ngModel)]="filtroMiembrosMax" (ngModelChange)="aplicarFiltros()">
+      </div>
+    </div>
+
+    <div class="filtro-grupo">
+      <label class="checkbox-label">
+        <input type="checkbox" [(ngModel)]="soloConPlazas" (ngModelChange)="aplicarFiltros()">
+        Solo escuderías con plazas libres
+      </label>
+    </div>
+
+    <div class="filtro-resultado">
+      <span>{{ clanesFiltrados.length }} escudería{{ clanesFiltrados.length !== 1 ? 's' : '' }} encontrada{{ clanesFiltrados.length !== 1 ? 's' : '' }}</span>
+    </div>
+  </aside>
+
+  <!-- LISTADO DE CLANES -->
+  <main class="clanes-grid-container">
+
+    <div class="clanes-header">
+      <h1 class="clanes-titulo"><i class="bi bi-shield-fill"></i> ESCUDERÍAS</h1>
+      <p class="clanes-subtitulo" *ngIf="filtroComunidad">
+        Mostrando escuderías de <strong>{{ filtroComunidad }}</strong>
+      </p>
+    </div>
+
+    <!-- Cargando -->
+    <div *ngIf="cargando" class="estado-vacio">
+      <p><i class="bi bi-hourglass-split"></i> Cargando escuderías...</p>
+    </div>
+
+    <!-- Sin resultados -->
+    <div *ngIf="!cargando && clanesFiltrados.length === 0" class="estado-vacio">
+      <p><i class="bi bi-search"></i> No se encontraron escuderías con esos filtros.</p>
+    </div>
+
+    <!-- Grid de clanes -->
+    <div *ngIf="!cargando" class="clanes-grid">
+      <div *ngFor="let clan of clanesFiltrados" class="clan-card">
+
+        <div class="clan-card-header">
+          <span class="clan-logo">{{ clan.logo_url }}</span>
+          <div class="clan-info">
+            <h3 class="clan-nombre">{{ clan.nombre }}</h3>
+            <span class="clan-ccaa"><i class="bi bi-geo-alt-fill"></i> {{ clan.comunidad_autonoma || 'España' }}</span>
+          </div>
+        </div>
+
+        <p class="clan-descripcion">{{ clan.descripcion || 'Sin descripción.' }}</p>
+
+        <!-- Barra de ocupación -->
+        <div class="ocupacion-container">
+          <div class="ocupacion-label">
+            <span><i class="bi bi-people-fill"></i> {{ clan.miembros_actuales }} / {{ clan.max_miembros }} miembros</span>
+            <span class="plazas-badge" [class.lleno]="plazasLibres(clan) === 0">
+              {{ plazasLibres(clan) === 0 ? 'LLENO' : plazasLibres(clan) + ' plazas' }}
+            </span>
+          </div>
+          <div class="barra-ocupacion">
+            <div class="barra-fill" [style.width.%]="porcentajeOcupacion(clan)"
+                 [class.barra-llena]="plazasLibres(clan) === 0"></div>
+          </div>
+        </div>
+
+        <button class="btn-unirse"
+                [disabled]="clan.uniendose || plazasLibres(clan) === 0"
+                (click)="unirse(clan)">
+          <span *ngIf="!clan.uniendose">{{ plazasLibres(clan) === 0 ? 'LLENA' : 'UNIRSE →' }}</span>
+          <span *ngIf="clan.uniendose">Uniéndose...</span>
+        </button>
+
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<app-footer></app-footer>

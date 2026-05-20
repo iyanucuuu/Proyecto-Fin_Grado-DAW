@@ -1,0 +1,377 @@
+@import 'https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css';
+
+html, body { overflow-x: hidden; }
+
+/* ── PANEL DE FILTROS ── */
+.filter-dashboard {
+    background: linear-gradient(180deg, #0a0a0a 0%, #111 100%);
+    padding: 22px 5% 26px;
+    border-bottom: 2px solid #e10600;
+    position: relative;
+}
+
+.filter-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.filter-title {
+    font-size: 1rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-style: italic;
+    color: transparent;
+    background: linear-gradient(90deg, #fff 0%, #ff6b6b 60%, #e10600 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    filter: drop-shadow(0 2px 4px rgba(225,6,0,0.4));
+    margin: 0;
+}
+
+/* Píldora de contador con punto pulsante */
+.counter-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(225,6,0,0.12);
+    border: 1px solid rgba(225,6,0,0.4);
+    padding: 6px 16px;
+    border-radius: 50px;
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.counter-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #e10600;
+    flex-shrink: 0;
+}
+
+.counter-dot.pulsing {
+    animation: pulse-dot 1.4s infinite;
+}
+
+@keyframes pulse-dot {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(225,6,0,0.6); }
+    50%       { box-shadow: 0 0 0 6px rgba(225,6,0,0); }
+}
+
+/* Grid de filtros */
+.filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    align-items: flex-end;
+}
+
+.filter-group label {
+    display: block;
+    color: rgba(255,255,255,0.5);
+    font-size: 0.68rem;
+    margin-bottom: 7px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.filter-group select {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: white;
+    padding: 11px 14px;
+    border-radius: 6px;
+    outline: none;
+    font-size: 0.88rem;
+    transition: border-color 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23e10600' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+    cursor: pointer;
+}
+
+.filter-group select:focus {
+    border-color: #e10600;
+    box-shadow: 0 0 0 2px rgba(225,6,0,0.2);
+}
+
+.filter-group select option { background: #1a1a1a; }
+
+/* Botones de estilo de mapa */
+.estilo-btns {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.estilo-btn {
+    flex: 1;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.65);
+    padding: 9px 8px;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.estilo-btn:hover { border-color: rgba(225,6,0,0.5); color: #fff; }
+.estilo-btn.active {
+    background: rgba(225,6,0,0.18);
+    border-color: #e10600;
+    color: #fff;
+    box-shadow: 0 0 8px rgba(225,6,0,0.3);
+}
+
+/* Botón reset */
+.filter-actions { display: flex; align-items: flex-end; }
+
+.btn-reset {
+    background: #e10600;
+    color: white;
+    border: none;
+    padding: 11px 22px;
+    cursor: pointer;
+    font-weight: 900;
+    font-style: italic;
+    letter-spacing: 1px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    width: 100%;
+}
+
+.btn-reset:hover {
+    background: white;
+    color: #e10600;
+    box-shadow: 0 0 14px rgba(225,6,0,0.4);
+}
+
+/* ── SECCIÓN DEL MAPA ── */
+.map-section {
+    padding: 20px 24px;
+    background: #0d0d0d;
+}
+
+.map-wrapper {
+    /* NO overflow:hidden — cortaría los popups de Mapbox */
+    position: relative;
+    border-radius: 12px;
+    box-shadow: 0 0 50px rgba(225, 6, 0, 0.25), 0 4px 20px rgba(0,0,0,0.7);
+}
+
+/* ── Mini-mapa Islas Canarias ─────────────────────────────────────────────── */
+.canarias-inset {
+  position: absolute;
+  bottom: 36px;
+  left: 12px;
+  z-index: 10;
+  width: 260px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid #e10600;
+  box-shadow: 0 0 24px rgba(225,6,0,0.45), 0 4px 12px rgba(0,0,0,0.6);
+}
+
+.canarias-inset-label {
+  background: rgba(8,8,20,0.92);
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 5px 8px;
+  text-align: center;
+  border-bottom: 1px solid rgba(225,6,0,0.4);
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.canarias-map-wrap {
+  height: 155px;
+  flex-shrink: 0;
+}
+
+#map-canarias {
+  width: 100%;
+  height: 100%;
+}
+
+/* Borde rojo encima del mapa sin clipear su contenido */
+.map-wrapper::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 3px solid #e10600;
+    border-radius: 12px;
+    pointer-events: none;
+    z-index: 5;
+}
+
+#map {
+    width: 100%;
+    height: 780px;
+    display: block;
+    touch-action: pan-x pan-y;
+}
+
+/* ── POPUP ── */
+::ng-deep .mapboxgl-popup-content {
+    background: #111 !important;
+    color: #fff !important;
+    border: 1px solid #e10600;
+    padding: 15px 18px;
+    border-radius: 10px;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+::ng-deep .mapboxgl-popup-content .popup-racing h3 {
+    color: #e10600;
+    margin: 0 0 10px;
+    font-style: italic;
+    text-transform: uppercase;
+    font-size: 0.95rem;
+}
+
+::ng-deep .popup-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 0.82rem;
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+
+::ng-deep .popup-row:last-of-type { border-bottom: none; }
+
+::ng-deep .popup-label {
+    color: rgba(255,255,255,0.5);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+::ng-deep .mapboxgl-popup-close-button {
+    color: rgba(255,255,255,0.6) !important;
+    font-size: 1.1rem;
+}
+
+::ng-deep .popup-web-btn {
+    display: block;
+    background: #e10600;
+    color: white !important;
+    text-align: center;
+    padding: 8px;
+    margin-top: 12px;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 5px;
+    font-size: 0.82rem;
+    letter-spacing: 0.5px;
+    transition: background 0.2s;
+}
+
+::ng-deep .popup-web-btn:hover { background: #ff2200; }
+
+/* Controles Mapbox – estilo oscuro */
+::ng-deep .mapboxgl-ctrl-group {
+    background: #1a1a1a !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    border-radius: 8px !important;
+}
+
+::ng-deep .mapboxgl-ctrl-group button {
+    background: transparent !important;
+    border: none !important;
+}
+
+::ng-deep .mapboxgl-ctrl-group button span { filter: invert(1); }
+
+/* ── MODO CLARO ── */
+[data-theme="light"] .filter-dashboard {
+    background: linear-gradient(180deg, #f0f0f5 0%, #e8e8f0 100%);
+    border-bottom-color: rgba(200,0,10,0.3);
+}
+[data-theme="light"] .filter-title {
+    background: linear-gradient(90deg, #18100f 0%, #8b0000 60%, #c8000a 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    filter: none;
+}
+[data-theme="light"] .counter-pill {
+    color: #18100f;
+    background: rgba(200,0,10,0.08);
+}
+[data-theme="light"] .filter-group label {
+    color: rgba(24,16,15,0.5);
+}
+[data-theme="light"] .filter-group select {
+    background: #ffffff;
+    border-color: rgba(0,0,0,0.15);
+    color: #18100f;
+}
+[data-theme="light"] .filter-group select option { background: #fff; color: #18100f; }
+[data-theme="light"] .estilo-btn {
+    background: rgba(0,0,0,0.05);
+    border-color: rgba(0,0,0,0.12);
+    color: rgba(24,16,15,0.65);
+}
+[data-theme="light"] .estilo-btn:hover { color: #18100f; border-color: rgba(200,0,10,0.4); }
+[data-theme="light"] .estilo-btn.active {
+    background: rgba(200,0,10,0.1);
+    border-color: #c8000a;
+    color: #18100f;
+}
+[data-theme="light"] .map-section {
+    background: #e8e8f0;
+}
+
+/* ── Marker overflow visible so name label isn't clipped ── */
+::ng-deep .mapboxgl-marker { overflow: visible !important; }
+
+/* ── Ver en Pistas popup button ── */
+::ng-deep .popup-pistas-btn {
+    display: block;
+    width: 100%;
+    background: transparent;
+    color: #e10600;
+    border: 1px solid rgba(225,6,0,0.45);
+    text-align: center;
+    padding: 7px;
+    margin-top: 6px;
+    font-weight: 700;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-family: 'Segoe UI', sans-serif;
+}
+::ng-deep .popup-pistas-btn:hover {
+    background: rgba(225,6,0,0.12);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 700px) {
+  .filter-dashboard { padding: 16px 14px 18px; }
+  .filters-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .filter-actions { flex-direction: column; }
+  .map-section { height: 55vh; }
+}

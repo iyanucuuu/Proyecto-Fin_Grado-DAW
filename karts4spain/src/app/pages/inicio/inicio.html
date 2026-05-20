@@ -1,0 +1,84 @@
+<div class="inicio-wrap">
+  <app-header></app-header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-content">
+        <h1>Encuentra a apasionados del Karting</h1>
+        <p>Descubre las mejores pistas, compite con amigos y conviértete en el mejor piloto de España</p>
+        <a routerLink="/pistas" class="cta-button">Explorar Pistas</a>
+      </div>
+    </section>
+
+    <!-- QUÉ SOMOS -->
+    <section class="about">
+      <h2>Qué somos</h2>
+      <div class="about-content">
+        <p>Somos una plataforma cuyo objetivo es fomentar la pasión por el karting y las carreras en toda España. Ofrecemos un espacio en el que todos los amantes de los karts se puedan sentir a gusto y encontrar a personas que compartan su afición.</p>
+        <p>Aquí podrás desde buscar pistas de karts por toda España, hasta crear carreras en las que se repartan puntos para un ranking nacional.</p>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="features">
+      <div class="feature-grid">
+        <a routerLink="/pistas" class="feature-card">
+          <div class="feature-icon"><i class="bi bi-flag-fill"></i></div>
+          <h3>Todas las pistas</h3>
+          <p>Descubre todos los circuitos disponibles en España</p>
+        </a>
+        <a routerLink="/social" class="feature-card">
+          <div class="feature-icon"><i class="bi bi-chat-dots-fill"></i></div>
+          <h3>Social por Circuito</h3>
+          <p>Chatea y organiza carreras en cualquier circuito</p>
+        </a>
+        <a routerLink="/ranking" class="feature-card">
+          <div class="feature-icon"><i class="bi bi-bar-chart-fill"></i></div>
+          <h3>Ranking Nacional</h3>
+          <p>Compite y sube en el ranking nacional de pilotos</p>
+        </a>
+      </div>
+    </section>
+
+    <!-- TOP 3 CIRCUITOS MEJOR VALORADOS -->
+    <section class="popular-tracks">
+      <h3><i class="bi bi-star-fill"></i> Circuitos mejor valorados</h3>
+
+      <div *ngIf="cargandoTop" class="top-loading">Cargando...</div>
+
+      <div *ngIf="!cargandoTop && topPistas.length === 0" class="top-empty">
+        Todavía no hay valoraciones. ¡Sé el primero en valorar un circuito!
+      </div>
+
+      <div class="tracks-grid" *ngIf="!cargandoTop && topPistas.length > 0">
+        <a class="track-card" *ngFor="let p of topPistas; let i = index"
+           [routerLink]="['/social', p.id_pista]">
+
+          <div class="track-number">{{ i + 1 }}</div>
+
+          <!-- Avatar -->
+          <div class="track-avatar">
+            <img *ngIf="p.foto" [src]="p.foto" [alt]="p.nombre">
+            <span *ngIf="!p.foto">{{ p.nombre.slice(0,2).toUpperCase() }}</span>
+          </div>
+
+          <h4>{{ p.nombre }}</h4>
+          <p class="track-meta">{{ p.ccaa }} · {{ p.tipo_kart }}</p>
+
+          <!-- Estrellas -->
+          <div class="track-stars">
+            <span *ngFor="let s of starsArray()"
+                  class="track-star"
+                  [class.llena]="estrellasLlenas(p.media, s)">★</span>
+            <span class="track-nota">{{ p.media.toFixed(1) }}</span>
+          </div>
+          <p class="track-votos">{{ p.total }} valoracion{{ p.total !== 1 ? 'es' : '' }}</p>
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <app-footer></app-footer>
+</div>

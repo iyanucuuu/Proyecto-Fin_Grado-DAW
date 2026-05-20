@@ -1,0 +1,254 @@
+<app-header></app-header>
+
+<div class="escuderia-page" *ngIf="!cargando && escuderia; else cargandoTpl">
+
+  <!-- HERO BANNER CLAN CARD -->
+  <div class="clan-hero-banner">
+    <div class="clan-hero-inner">
+      <div class="clan-emblem-ring">
+        <span class="clan-emblem-icon">{{ escuderia.logo_url }}</span>
+      </div>
+      <div class="clan-hero-info">
+        <div class="clan-hero-badge">ESCUDERÍA OFICIAL</div>
+        <h1 class="clan-hero-name">{{ escuderia.nombre }}</h1>
+        <p class="clan-hero-ccaa"><i class="bi bi-geo-alt-fill"></i> {{ escuderia.comunidad_autonoma || 'España' }}</p>
+        <p class="clan-hero-desc">{{ escuderia.descripcion || 'Sin descripción.' }}</p>
+        <div class="clan-hero-stats">
+          <div class="stat-chip">
+            <span class="stat-num">{{ miembros.length }}</span>
+            <span class="stat-label">PILOTOS</span>
+          </div>
+          <div class="stat-chip">
+            <span class="stat-num">{{ escuderia.max_miembros }}</span>
+            <span class="stat-label">MÁX.</span>
+          </div>
+          <div class="stat-chip">
+            <span class="stat-num">{{ escuderia.max_miembros - miembros.length }}</span>
+            <span class="stat-label">PLAZAS</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="clan-hero-divider"></div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs-container">
+    <button class="tab-btn" [class.active]="tabActiva === 'escuderia'" (click)="cambiarTab('escuderia')">
+      <i class="bi bi-shield-fill"></i> ESCUDERÍA
+    </button>
+    <button class="tab-btn" [class.active]="tabActiva === 'chat'" (click)="cambiarTab('chat')">
+      <i class="bi bi-chat-dots-fill"></i> CHAT & CARRERAS
+    </button>
+  </div>
+
+  <!-- TAB: ESCUDERÍA (MIEMBROS) -->
+  <div class="tab-content" *ngIf="tabActiva === 'escuderia'">
+    <div class="miembros-section">
+      <h2 class="section-label"><i class="bi bi-people-fill"></i> PILOTOS DEL EQUIPO</h2>
+      <div class="miembros-grid">
+        <div class="miembro-card" *ngFor="let m of miembros" [class.lider-card]="m.es_lider">
+          <div class="miembro-avatar-wrap">
+            <div class="miembro-avatar">
+              <img *ngIf="m.foto_perfil" [src]="m.foto_perfil" [alt]="m.username">
+              <span *ngIf="!m.foto_perfil">{{ m.initials }}</span>
+            </div>
+            <div class="lider-crown" *ngIf="m.es_lider"><i class="bi bi-crown-fill"></i></div>
+          </div>
+          <p class="miembro-username">{{ m.username }}</p>
+          <span class="miembro-rol">{{ m.es_lider ? 'LÍDER' : 'PILOTO' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: CHAT & CARRERAS -->
+  <div class="tab-content chat-tab" *ngIf="tabActiva === 'chat'">
+    <div class="chat-layout">
+
+      <!-- PANEL CHAT -->
+      <div class="chat-panel">
+        <div class="chat-header">
+          <span class="chat-title"><i class="bi bi-chat-dots-fill"></i> CHAT DE LA ESCUDERÍA</span>
+          <button class="btn-nueva-carrera" (click)="abrirModalCarrera()">
+            <i class="bi bi-flag-fill"></i> ORGANIZAR CARRERA
+          </button>
+        </div>
+
+        <div class="chat-messages" #chatContainer>
+          <div *ngIf="mensajes.length === 0" class="chat-vacio">
+            <p>Sé el primero en escribir algo...</p>
+          </div>
+
+          <div *ngFor="let msg of mensajes" class="mensaje-wrapper" [class.mensaje-mio]="msg.esMio">
+
+            <!-- MENSAJE DE CARRERA -->
+            <div *ngIf="msg.tipo === 'carrera' && msg.carrera" class="carrera-card-chat">
+              <div class="carrera-card-header">
+                <span class="carrera-badge"><i class="bi bi-flag-fill"></i> CARRERA ORGANIZADA</span>
+                <span class="carrera-creator">por {{ msg.carrera.username_creador }}</span>
+                <button *ngIf="msg.carrera.id_creador === idUsuario"
+                        class="btn-eliminar-carrera"
+                        [disabled]="eliminandoCarreraId === msg.carrera.id"
+                        (click)="eliminarCarrera(msg.carrera)"
+                        title="Eliminar carrera">
+                  <ng-container *ngIf="eliminandoCarreraId !== msg.carrera.id"><i class="bi bi-trash3-fill"></i></ng-container>
+                  <ng-container *ngIf="eliminandoCarreraId === msg.carrera.id">...</ng-container>
+                </button>
+              </div>
+              <h3 class="carrera-titulo">{{ msg.carrera.titulo }}</h3>
+              <p class="carrera-desc" *ngIf="msg.carrera.descripcion">{{ msg.carrera.descripcion }}</p>
+              <div class="carrera-detalles">
+                <span *ngIf="msg.carrera.pista"><i class="bi bi-map-fill"></i> {{ msg.carrera.pista }}</span>
+                <span><i class="bi bi-calendar-event-fill"></i> {{ formatFecha(msg.carrera.fecha_hora) }}</span>
+              </div>
+
+              <!-- Inscritos -->
+              <div class="inscritos-row" *ngIf="msg.carrera.inscritos.length > 0">
+                <span class="inscritos-label">Apuntados ({{ msg.carrera.inscritos.length }}):</span>
+                <div class="inscritos-avatars">
+                  <div class="inscrito-avatar" *ngFor="let ins of msg.carrera.inscritos"
+                       [title]="ins.username">
+                    <img *ngIf="ins.foto_perfil" [src]="ins.foto_perfil" [alt]="ins.username">
+                    <span *ngIf="!ins.foto_perfil">{{ ins.username.substring(0, 2).toUpperCase() }}</span>
+                  </div>
+                </div>
+              </div>
+              <p class="inscritos-vacio" *ngIf="msg.carrera.inscritos.length === 0">Nadie apuntado aún.</p>
+
+              <div *ngIf="esPasada(msg.carrera.fecha_hora)" class="carrera-expirada-label">
+                <i class="bi bi-clock-history"></i> Carrera finalizada
+              </div>
+              <button *ngIf="!esPasada(msg.carrera.fecha_hora)"
+                      class="btn-inscribirse"
+                      [class.ya-inscrito]="msg.carrera.yaInscrito"
+                      (click)="inscribirse(msg.carrera)">
+                <ng-container *ngIf="msg.carrera.yaInscrito"><i class="bi bi-check-circle-fill"></i> APUNTADO — Salir</ng-container>
+                <ng-container *ngIf="!msg.carrera.yaInscrito"><i class="bi bi-plus-circle-fill"></i> APUNTARME</ng-container>
+              </button>
+            </div>
+
+            <!-- MENSAJE NORMAL -->
+            <ng-container *ngIf="msg.tipo === 'mensaje'">
+              <div class="msg-avatar" *ngIf="!msg.esMio">
+                <img *ngIf="msg.foto_perfil" [src]="msg.foto_perfil" [alt]="msg.username">
+                <span *ngIf="!msg.foto_perfil">{{ msg.initials }}</span>
+              </div>
+              <div class="msg-bubble-wrap">
+                <!-- Nombre visible en todos los mensajes -->
+                <span class="msg-username">{{ msg.username }}</span>
+                <div class="msg-bubble">{{ msg.mensaje }}</div>
+                <span class="msg-hora">{{ formatHora(msg.created_at) }}</span>
+              </div>
+              <div class="msg-avatar msg-avatar-right" *ngIf="msg.esMio">
+                <img *ngIf="msg.foto_perfil" [src]="msg.foto_perfil" [alt]="msg.username">
+                <span *ngIf="!msg.foto_perfil">{{ msg.initials }}</span>
+              </div>
+            </ng-container>
+
+          </div>
+        </div>
+
+        <!-- INPUT -->
+        <div class="chat-input-row">
+          <input
+            type="text"
+            class="chat-input"
+            [(ngModel)]="nuevoMensaje"
+            placeholder="Escribe un mensaje..."
+            (keydown)="onEnter($event)"
+            [disabled]="enviando"
+            maxlength="500">
+          <button class="btn-enviar" (click)="enviarMensaje()" [disabled]="!nuevoMensaje.trim() || enviando">
+            ➤
+          </button>
+        </div>
+      </div>
+
+      <!-- PANEL LATERAL: PRÓXIMAS CARRERAS -->
+      <aside class="carreras-sidebar">
+        <h3 class="sidebar-title"><i class="bi bi-flag-fill"></i> PRÓXIMAS CARRERAS</h3>
+        <div *ngIf="carreras.length === 0" class="carreras-vacio">
+          <p>Sin carreras programadas.</p>
+          <button class="btn-nueva-carrera-sm" (click)="abrirModalCarrera()">+ Organizar una</button>
+        </div>
+        <div class="carrera-item" *ngFor="let c of carreras">
+          <div class="carrera-item-top">
+            <span class="carrera-item-titulo">{{ c.titulo }}</span>
+            <span class="carrera-item-fecha">{{ formatFecha(c.fecha_hora) }}</span>
+          </div>
+          <span *ngIf="c.pista" class="carrera-item-pista"><i class="bi bi-map-fill"></i> {{ c.pista }}</span>
+          <div class="carrera-item-bottom">
+            <span class="inscritos-count"><i class="bi bi-people-fill"></i> {{ c.inscritos.length }} apuntados</span>
+            <span *ngIf="esPasada(c.fecha_hora)" class="carrera-item-expirada">
+              <i class="bi bi-clock-history"></i> Finalizada
+            </span>
+            <button *ngIf="!esPasada(c.fecha_hora)"
+                    class="btn-item-inscribirse"
+                    [class.ya-inscrito]="c.yaInscrito"
+                    (click)="inscribirse(c)">
+              <ng-container *ngIf="c.yaInscrito"><i class="bi bi-check-circle-fill"></i> Salir</ng-container>
+              <ng-container *ngIf="!c.yaInscrito"><i class="bi bi-plus-circle-fill"></i> Apuntarme</ng-container>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- CARGANDO -->
+<ng-template #cargandoTpl>
+  <div class="cargando-pantalla">
+    <div class="cargando-spinner"><i class="bi bi-hourglass-split" style="font-size:2rem;"></i></div>
+    <p>Entrando al box...</p>
+  </div>
+</ng-template>
+
+<!-- MODAL NUEVA CARRERA -->
+<div class="modal-overlay" *ngIf="mostrarModalCarrera" (click)="mostrarModalCarrera = false">
+  <div class="modal-carrera" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title"><i class="bi bi-flag-fill"></i> ORGANIZAR CARRERA</h2>
+      <button class="modal-close" (click)="mostrarModalCarrera = false">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Nombre de la carrera *</label>
+        <input type="text" [(ngModel)]="nuevaCarrera.titulo" placeholder="GP de la escudería..." maxlength="80">
+      </div>
+      <div class="form-group">
+        <label>Descripción</label>
+        <textarea [(ngModel)]="nuevaCarrera.descripcion" placeholder="Detalles de la carrera..." rows="3" maxlength="300"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Pista / Circuito</label>
+        <select [(ngModel)]="nuevaCarrera.pista" [disabled]="cargandoPistas">
+          <option value="">{{ cargandoPistas ? 'Cargando pistas...' : '— Sin pista asignada —' }}</option>
+          <option *ngFor="let p of listaPistas" [value]="p.nombre">
+            {{ p.nombre }}{{ p.ccaa ? ' (' + p.ccaa + ')' : '' }}
+          </option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Fecha y hora *</label>
+        <input type="datetime-local" [(ngModel)]="nuevaCarrera.fecha_hora">
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancelar" (click)="mostrarModalCarrera = false">CANCELAR</button>
+      <button class="btn-crear"
+              [disabled]="!nuevaCarrera.titulo || !nuevaCarrera.fecha_hora || creandoCarrera"
+              (click)="crearCarrera()">
+        <ng-container *ngIf="!creandoCarrera"><i class="bi bi-flag-fill"></i> CREAR CARRERA</ng-container>
+        <ng-container *ngIf="creandoCarrera">Creando...</ng-container>
+      </button>
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer>

@@ -1,0 +1,47 @@
+# ─────────────────────────────────────────────────────────────────────────────
+#  Karts4Spain — .gitignore raíz del monorepo
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Archivos de credenciales ──────────────────────────────────────────────────
+# Copia los archivos .example correspondientes y rellena tus claves
+**/.env
+**/.env.*
+!**/.env.example
+backend/karts4spain-backend/src/main/resources/application.properties
+karts4spain/src/environments/environment.ts
+!karts4spain/src/environments/environment.example.ts
+
+# ── Frontend Angular ──────────────────────────────────────────────────────────
+karts4spain/node_modules/
+karts4spain/dist/
+karts4spain/.angular/
+
+# ── Backend Spring Boot / Maven ───────────────────────────────────────────────
+backend/karts4spain-backend/target/
+
+# ── Repositorio Git antiguo (no incluir como submódulo) ───────────────────────
+git/
+
+# ── Documentación / Memoria del TFG (archivos Word) ──────────────────────────
+*.docx
+*.~lock.*
+
+# ── IDEs ──────────────────────────────────────────────────────────────────────
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+*.suo
+*.user
+
+# ── Sistema operativo ─────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Logs ──────────────────────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

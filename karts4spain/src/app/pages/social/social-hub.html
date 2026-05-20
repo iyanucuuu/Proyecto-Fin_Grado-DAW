@@ -1,0 +1,416 @@
+<app-header></app-header>
+
+<main class="hub-page">
+
+  <!-- HERO -->
+  <section class="hub-hero">
+    <div class="hub-hero-inner">
+      <span class="hub-badge"><i class="bi bi-chat-dots-fill"></i> COMUNIDAD</span>
+      <h1 class="hub-title">Social</h1>
+      <p class="hub-sub">Circuitos, mensajes privados y grupos de pilotos.</p>
+    </div>
+  </section>
+
+  <!-- TABS PRINCIPALES -->
+  <div class="hub-tabs">
+    <button class="hub-tab" [class.active]="tabActiva === 'circuitos'" (click)="cambiarTab('circuitos')">
+      <i class="bi bi-flag-fill"></i> Circuitos
+    </button>
+    <button class="hub-tab" [class.active]="tabActiva === 'mensajes'" (click)="cambiarTab('mensajes')">
+      <i class="bi bi-chat-dots-fill"></i> Mensajes privados
+    </button>
+    <button class="hub-tab" [class.active]="tabActiva === 'grupos'" (click)="cambiarTab('grupos')">
+      <i class="bi bi-people-fill"></i> Grupos
+    </button>
+  </div>
+
+  <!-- ══ TAB: CIRCUITOS ══════════════════════════════════════════════════════ -->
+  <div *ngIf="tabActiva === 'circuitos'">
+    <div class="hub-layout" *ngIf="!cargando">
+
+      <!-- PANEL FILTROS -->
+      <aside class="hub-filtros">
+        <h2 class="hub-filtros-titulo"><i class="bi bi-funnel-fill"></i> FILTROS</h2>
+        <div class="hub-filtro-grupo">
+          <label>BUSCAR</label>
+          <div class="hub-search-wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" class="hub-search-ico">
+              <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input type="text" class="hub-input" placeholder="Nombre o comunidad..."
+                   [(ngModel)]="busqueda" (ngModelChange)="aplicarFiltros()">
+          </div>
+        </div>
+        <div class="hub-filtro-grupo">
+          <label>COMUNIDAD</label>
+          <select class="hub-select" [(ngModel)]="filtroCCAA" (ngModelChange)="aplicarFiltros()">
+            <option value="">Toda España</option>
+            <option *ngFor="let c of ccaas" [value]="c">{{ c }}</option>
+          </select>
+        </div>
+        <div class="hub-filtro-grupo">
+          <label>MOTOR</label>
+          <select class="hub-select" [(ngModel)]="filtroTipo" (ngModelChange)="aplicarFiltros()">
+            <option value="">Todos</option>
+            <option *ngFor="let t of tipos" [value]="t">{{ t }}</option>
+          </select>
+        </div>
+        <div class="hub-filtro-grupo">
+          <label>ENTORNO</label>
+          <select class="hub-select" [(ngModel)]="filtroEntorno" (ngModelChange)="aplicarFiltros()">
+            <option value="">Todos</option>
+            <option *ngFor="let e of entornos" [value]="e">{{ e }}</option>
+          </select>
+        </div>
+        <div class="hub-filtro-grupo">
+          <label class="hub-check-label">
+            <input type="checkbox" [(ngModel)]="soloActivos" (ngModelChange)="aplicarFiltros()">
+            <span>Solo con actividad hoy</span>
+          </label>
+        </div>
+        <button class="hub-btn-reset" (click)="resetFiltros()"><i class="bi bi-arrow-counterclockwise"></i> Reiniciar</button>
+        <div class="hub-contador">
+          <span class="hub-contador-num">{{ filtradas.length }}</span>
+          <span>circuito{{ filtradas.length !== 1 ? 's' : '' }}</span>
+        </div>
+      </aside>
+
+      <!-- LISTA DE CIRCUITOS -->
+      <main class="hub-resultados">
+        <div *ngIf="filtradas.length === 0" class="hub-empty">
+          <i class="bi bi-flag" style="font-size:2rem;opacity:0.3;"></i>
+          <p>No hay circuitos con esos filtros.</p>
+          <button class="hub-btn-reset" (click)="resetFiltros()">Ver todos</button>
+        </div>
+        <div class="hub-lista">
+          <div class="hub-card" *ngFor="let p of filtradas" (click)="entrar(p)">
+            <div class="hub-card-active" *ngIf="p.mensajes_recientes > 0">
+              <span class="hub-dot"></span>{{ p.mensajes_recientes }} msg hoy
+            </div>
+            <div class="hub-avatar">
+              <img *ngIf="p.foto" [src]="p.foto" [alt]="p.nombre">
+              <span *ngIf="!p.foto">{{ p.nombre.slice(0,2).toUpperCase() }}</span>
+            </div>
+            <div class="hub-card-info">
+              <div class="hub-card-nombre">{{ p.nombre }}</div>
+              <div class="hub-card-meta">
+                <span *ngIf="p.ccaa"><i class="bi bi-geo-alt-fill"></i> {{ p.ccaa }}</span>
+                <span *ngIf="p.entorno"><i class="bi bi-house-door-fill"></i> {{ p.entorno }}</span>
+                <span *ngIf="p.tipo_kart" class="hub-tipo">{{ p.tipo_kart }}</span>
+              </div>
+            </div>
+            <div class="hub-card-cta"><span class="hub-btn-entrar">Entrar →</span></div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <div class="hub-loading" *ngIf="cargando">
+      <div class="hub-spinner"></div><p>Cargando circuitos...</p>
+    </div>
+  </div>
+
+  <!-- ══ TAB: MENSAJES PRIVADOS ══════════════════════════════════════════════ -->
+  <div *ngIf="tabActiva === 'mensajes'" class="dm-layout">
+
+    <!-- Sin sesión -->
+    <div class="dm-no-session" *ngIf="!idUsuario">
+      <i class="bi bi-lock-fill" style="font-size:2rem;opacity:0.4;"></i>
+      <p>Inicia sesión para ver tus mensajes privados.</p>
+    </div>
+
+    <ng-container *ngIf="idUsuario">
+      <!-- Lista de conversaciones -->
+      <aside class="dm-sidebar">
+        <div class="dm-sidebar-header">
+          <h2 class="dm-sidebar-title">Mensajes</h2>
+          <button class="dm-btn-nuevo" (click)="abrirNuevoMensaje()">
+            <i class="bi bi-pencil-square"></i> Nuevo
+          </button>
+        </div>
+
+        <div class="dm-loading" *ngIf="cargandoConvs">
+          <div class="hub-spinner"></div>
+        </div>
+
+        <div class="dm-empty" *ngIf="!cargandoConvs && conversaciones.length === 0">
+          <i class="bi bi-chat-dots" style="font-size:1.5rem;opacity:0.3;"></i>
+          <p>Sin conversaciones aún.<br>Ve a <strong>Amigos</strong> y pulsa "Enviar mensaje".</p>
+        </div>
+
+        <ul class="dm-conv-lista" *ngIf="!cargandoConvs && conversaciones.length > 0">
+          <li class="dm-conv-item"
+              *ngFor="let c of conversaciones"
+              [class.activa]="convActiva?.id_usuario === c.id_usuario"
+              (click)="abrirConversacion(c)">
+            <div class="dm-conv-avatar">
+              <img *ngIf="c.foto_perfil" [src]="c.foto_perfil" [alt]="c.username">
+              <span *ngIf="!c.foto_perfil">{{ c.initials }}</span>
+            </div>
+            <div class="dm-conv-info">
+              <div class="dm-conv-nombre">{{ c.username }}</div>
+              <div class="dm-conv-ultimo">{{ c.ultimo_mensaje }}</div>
+            </div>
+            <div class="dm-conv-meta">
+              <span class="dm-conv-hora" *ngIf="c.ultimo_at">{{ formatHora(c.ultimo_at) }}</span>
+              <span class="dm-conv-badge" *ngIf="c.no_leidos > 0">{{ c.no_leidos }}</span>
+            </div>
+          </li>
+        </ul>
+      </aside>
+
+      <!-- Panel de chat -->
+      <main class="dm-panel">
+        <!-- Sin conversación seleccionada -->
+        <div class="dm-select-hint" *ngIf="!convActiva">
+          <i class="bi bi-chat-dots" style="font-size:2rem;opacity:0.3;"></i>
+          <p>Selecciona una conversación para chatear.</p>
+        </div>
+
+        <!-- Chat activo -->
+        <ng-container *ngIf="convActiva">
+          <div class="dm-chat-header">
+            <div class="dm-chat-avatar">
+              <img *ngIf="convActiva.foto_perfil" [src]="convActiva.foto_perfil" [alt]="convActiva.username">
+              <span *ngIf="!convActiva.foto_perfil">{{ convActiva.initials }}</span>
+            </div>
+            <span class="dm-chat-nombre">{{ convActiva.username }}</span>
+          </div>
+
+          <div class="dm-chat-mensajes" #dmChat>
+            <div *ngIf="cargandoDMs" class="dm-loading-msgs">
+              <div class="hub-spinner"></div>
+            </div>
+            <div *ngIf="!cargandoDMs && mensajesDM.length === 0" class="dm-vacio">
+              <p>Sé el primero en decir algo</p>
+            </div>
+            <div *ngFor="let m of mensajesDM"
+                 class="dm-burbuja" [class.mia]="m.esMio" [class.suya]="!m.esMio">
+              <div class="dm-burbuja-texto">{{ m.mensaje }}</div>
+              <div class="dm-burbuja-hora">{{ formatFechaCompleta(m.created_at) }}</div>
+            </div>
+          </div>
+
+          <div class="dm-input-area">
+            <textarea class="dm-input" [(ngModel)]="nuevoDM"
+                      (keydown)="onEnterDM($event)"
+                      placeholder="Escribe un mensaje... (Enter para enviar)"
+                      rows="1" maxlength="500"></textarea>
+            <button class="dm-btn-enviar" (click)="enviarDM()"
+                    [disabled]="!nuevoDM.trim() || enviandoDM">
+              {{ enviandoDM ? '...' : '▶' }}
+            </button>
+          </div>
+        </ng-container>
+      </main>
+    </ng-container>
+  </div>
+
+  <!-- ══ TAB: GRUPOS ═════════════════════════════════════════════════════════ -->
+  <div *ngIf="tabActiva === 'grupos'" class="dm-layout">
+
+    <!-- Sin sesión -->
+    <div class="dm-no-session" *ngIf="!idUsuario">
+      <i class="bi bi-lock-fill" style="font-size:2rem;opacity:0.4;"></i>
+      <p>Inicia sesión para ver tus grupos.</p>
+    </div>
+
+    <ng-container *ngIf="idUsuario">
+      <!-- Lista de grupos -->
+      <aside class="dm-sidebar">
+        <div class="dm-sidebar-header">
+          <h2 class="dm-sidebar-title">Grupos</h2>
+          <button class="dm-btn-nuevo" (click)="mostrarCrearGrupo = true">+ Nuevo</button>
+        </div>
+
+        <div class="dm-loading" *ngIf="cargandoGrupos">
+          <div class="hub-spinner"></div>
+        </div>
+
+        <div class="dm-empty" *ngIf="!cargandoGrupos && grupos.length === 0">
+          <i class="bi bi-people" style="font-size:1.5rem;opacity:0.3;"></i>
+          <p>Aún no perteneces a ningún grupo.<br>¡Crea el primero!</p>
+        </div>
+
+        <ul class="dm-conv-lista" *ngIf="!cargandoGrupos && grupos.length > 0">
+          <li class="dm-conv-item grupo-item"
+              *ngFor="let g of grupos"
+              [class.activa]="grupoActivo?.id === g.id"
+              (click)="abrirGrupo(g)">
+            <div class="dm-conv-avatar grupo-avatar">
+              <img *ngIf="g.foto_url" [src]="g.foto_url" [alt]="g.nombre">
+              <span *ngIf="!g.foto_url">{{ g.initials }}</span>
+            </div>
+            <div class="dm-conv-info">
+              <div class="dm-conv-nombre">{{ g.nombre }}</div>
+              <div class="dm-conv-ultimo" *ngIf="g.descripcion">{{ g.descripcion }}</div>
+            </div>
+          </li>
+        </ul>
+      </aside>
+
+      <!-- Panel de chat de grupo -->
+      <main class="dm-panel">
+        <div class="dm-select-hint" *ngIf="!grupoActivo">
+          <i class="bi bi-people" style="font-size:2rem;opacity:0.3;"></i>
+          <p>Selecciona un grupo para chatear.</p>
+          <button class="hub-btn-reset" (click)="mostrarCrearGrupo = true">+ Crear grupo</button>
+        </div>
+
+        <ng-container *ngIf="grupoActivo">
+          <div class="dm-chat-header">
+            <div class="dm-chat-avatar grupo-avatar">
+              <img *ngIf="grupoActivo.foto_url" [src]="grupoActivo.foto_url" [alt]="grupoActivo.nombre">
+              <span *ngIf="!grupoActivo.foto_url">{{ grupoActivo.initials }}</span>
+            </div>
+            <span class="dm-chat-nombre">{{ grupoActivo.nombre }}</span>
+            <button class="dm-btn-anadir" (click)="abrirAnadirMiembro()" title="Añadir miembro">
+              <i class="bi bi-person-plus-fill"></i> Añadir
+            </button>
+            <button class="dm-btn-abandonar" (click)="abandonarGrupo(grupoActivo)" title="Abandonar grupo">
+              <i class="bi bi-box-arrow-left"></i>
+            </button>
+          </div>
+
+          <div class="dm-chat-mensajes" #grupoChat>
+            <div *ngIf="cargandoMsgsGrupo" class="dm-loading-msgs">
+              <div class="hub-spinner"></div>
+            </div>
+            <div *ngIf="!cargandoMsgsGrupo && mensajesGrupo.length === 0" class="dm-vacio">
+              <p>El grupo está vacío. ¡Sé el primero en escribir!</p>
+            </div>
+            <div *ngFor="let m of mensajesGrupo"
+                 class="dm-burbuja" [class.mia]="m.esMio" [class.suya]="!m.esMio">
+              <div class="dm-burbuja-autor" *ngIf="!m.esMio">{{ m.username }}</div>
+              <div class="dm-burbuja-texto">{{ m.mensaje }}</div>
+              <div class="dm-burbuja-hora">{{ formatFechaCompleta(m.created_at) }}</div>
+            </div>
+          </div>
+
+          <div class="dm-input-area">
+            <textarea class="dm-input" [(ngModel)]="nuevoMsgGrupo"
+                      (keydown)="onEnterGrupo($event)"
+                      placeholder="Escribe en el grupo... (Enter para enviar)"
+                      rows="1" maxlength="500"></textarea>
+            <button class="dm-btn-enviar" (click)="enviarMsgGrupo()"
+                    [disabled]="!nuevoMsgGrupo.trim() || enviandoGrupo">
+              {{ enviandoGrupo ? '...' : '▶' }}
+            </button>
+          </div>
+        </ng-container>
+      </main>
+    </ng-container>
+  </div>
+
+</main>
+
+<!-- MODAL NUEVO MENSAJE PRIVADO -->
+<div class="modal-overlay" *ngIf="mostrarNuevoMensaje" (click)="mostrarNuevoMensaje = false">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <button class="modal-close" (click)="mostrarNuevoMensaje = false">✕</button>
+    <h2 class="modal-titulo"><i class="bi bi-pencil-square"></i> Nuevo mensaje</h2>
+    <p class="modal-sub">Elige un amigo con el que quieras chatear</p>
+
+    <div class="modal-search-wrap">
+      <i class="bi bi-search modal-search-ico"></i>
+      <input type="text" class="form-input" [(ngModel)]="busquedaNuevoDM"
+             placeholder="Buscar amigo..." autofocus>
+    </div>
+
+    <div class="dm-loading" *ngIf="cargandoAmigos">
+      <div class="hub-spinner"></div>
+    </div>
+
+    <div class="amigos-modal-lista" *ngIf="!cargandoAmigos">
+      <div class="amigos-modal-empty" *ngIf="amigosFiltraNuevoDM.length === 0">
+        <i class="bi bi-people" style="font-size:1.4rem;opacity:0.3;"></i>
+        <span *ngIf="amigos.length === 0">Aún no tienes amigos. Añade pilotos desde la sección Amigos.</span>
+        <span *ngIf="amigos.length > 0">Ningún amigo coincide con la búsqueda.</span>
+      </div>
+      <button class="amigo-modal-item" *ngFor="let a of amigosFiltraNuevoDM"
+              (click)="iniciarConversacion(a)">
+        <div class="dm-conv-avatar">
+          <img *ngIf="a.foto_perfil" [src]="a.foto_perfil" [alt]="a.username">
+          <span *ngIf="!a.foto_perfil">{{ a.initials }}</span>
+        </div>
+        <span class="amigo-modal-nombre">{{ a.username }}</span>
+        <i class="bi bi-arrow-right-circle amigo-modal-arrow"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL AÑADIR MIEMBRO AL GRUPO -->
+<div class="modal-overlay" *ngIf="mostrarAnadirMiembro" (click)="mostrarAnadirMiembro = false">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <button class="modal-close" (click)="mostrarAnadirMiembro = false">✕</button>
+    <h2 class="modal-titulo"><i class="bi bi-person-plus-fill"></i> Añadir miembro</h2>
+    <p class="modal-sub">Invita a un amigo al grupo <strong>{{ grupoActivo?.nombre }}</strong></p>
+
+    <div class="modal-search-wrap">
+      <i class="bi bi-search modal-search-ico"></i>
+      <input type="text" class="form-input" [(ngModel)]="busquedaAnadir"
+             placeholder="Buscar amigo..." autofocus>
+    </div>
+
+    <div class="dm-loading" *ngIf="cargandoAmigos">
+      <div class="hub-spinner"></div>
+    </div>
+
+    <div class="amigos-modal-lista" *ngIf="!cargandoAmigos">
+      <div class="amigos-modal-empty" *ngIf="amigosParaAnadir.length === 0">
+        <i class="bi bi-people" style="font-size:1.4rem;opacity:0.3;"></i>
+        <span *ngIf="amigos.length === 0">Aún no tienes amigos para añadir.</span>
+        <span *ngIf="amigos.length > 0 && amigosParaAnadir.length === 0">Todos tus amigos ya están en el grupo.</span>
+      </div>
+      <div class="amigo-modal-item" *ngFor="let a of amigosParaAnadir"
+           [class.ya-anadido]="miembrosGrupoIds.includes(a.id_usuario)">
+        <div class="dm-conv-avatar">
+          <img *ngIf="a.foto_perfil" [src]="a.foto_perfil" [alt]="a.username">
+          <span *ngIf="!a.foto_perfil">{{ a.initials }}</span>
+        </div>
+        <span class="amigo-modal-nombre">{{ a.username }}</span>
+        <button class="btn-anadir-miembro"
+                (click)="anadirMiembro(a)"
+                [disabled]="anadiendo || miembrosGrupoIds.includes(a.id_usuario)">
+          <ng-container *ngIf="!miembrosGrupoIds.includes(a.id_usuario)">
+            <i class="bi bi-person-check-fill"></i> Añadir
+          </ng-container>
+          <ng-container *ngIf="miembrosGrupoIds.includes(a.id_usuario)">
+            <i class="bi bi-check-lg"></i> Añadido
+          </ng-container>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CREAR GRUPO -->
+<div class="modal-overlay" *ngIf="mostrarCrearGrupo" (click)="mostrarCrearGrupo = false">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <button class="modal-close" (click)="mostrarCrearGrupo = false">✕</button>
+    <h2 class="modal-titulo"><i class="bi bi-people-fill"></i> Crear grupo</h2>
+    <p class="modal-sub">Un espacio para charlar con otros pilotos fuera de tu escudería</p>
+
+    <div class="form-grupo">
+      <label>Nombre del grupo *</label>
+      <input type="text" [(ngModel)]="nuevoGrupo.nombre" placeholder="Ej: Pilotos de Madrid" maxlength="60" class="form-input">
+    </div>
+    <div class="form-grupo">
+      <label>Descripción (opcional)</label>
+      <textarea [(ngModel)]="nuevoGrupo.descripcion" placeholder="¿De qué va el grupo?" rows="2" maxlength="200" class="form-textarea"></textarea>
+    </div>
+
+    <div class="modal-acciones">
+      <button class="btn-cancelar-modal" (click)="mostrarCrearGrupo = false">Cancelar</button>
+      <button class="btn-crear-modal"
+              (click)="crearGrupo()"
+              [disabled]="!nuevoGrupo.nombre.trim() || creandoGrupo">
+        <ng-container *ngIf="!creandoGrupo"><i class="bi bi-check-circle-fill"></i> Crear grupo</ng-container>
+        <ng-container *ngIf="creandoGrupo">Creando...</ng-container>
+      </button>
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Confirma tu cuenta – karts4spain</title>
+</head>
+<body style="margin:0;padding:0;background-color:#0f1018;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+
+  <!-- Wrapper -->
+  <table width="100%" cellpadding="0" cellspacing="0" border="0"
+         style="background-color:#0f1018;min-height:100vh;">
+    <tr>
+      <td align="center" style="padding:48px 16px;">
+
+        <!-- Card -->
+        <table width="100%" cellpadding="0" cellspacing="0" border="0"
+               style="max-width:520px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:16px;overflow:hidden;">
+
+          <!-- Franja roja superior -->
+          <tr>
+            <td style="height:4px;background:linear-gradient(90deg,transparent 0%,#7a0000 10%,#c8000a 35%,#ff1e0a 50%,#c8000a 65%,#7a0000 90%,transparent 100%);font-size:0;line-height:0;">&nbsp;</td>
+          </tr>
+
+          <!-- Header / Marca -->
+          <tr>
+            <td align="center"
+                style="background:linear-gradient(180deg,#1a1b24 0%,#14151c 100%);border-bottom:1px solid rgba(220,0,10,0.35);padding:32px 40px 28px;">
+
+              <!-- Logo texto -->
+              <div style="font-size:2rem;font-weight:900;font-style:italic;letter-spacing:3px;color:#eeeae6;text-shadow:0 2px 16px rgba(0,0,0,0.7);">
+                karts<span style="color:#e10600;">4</span>spain
+              </div>
+              <div style="margin-top:6px;font-size:0.72rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(238,234,230,0.35);">
+                La comunidad del karting nacional
+              </div>
+            </td>
+          </tr>
+
+          <!-- Cuerpo -->
+          <tr>
+            <td style="padding:40px 40px 32px;">
+
+              <!-- Icono -->
+              <div style="text-align:center;margin-bottom:28px;">
+                <div style="display:inline-block;width:64px;height:64px;background:rgba(225,6,0,0.12);border:1px solid rgba(225,6,0,0.3);border-radius:50%;line-height:64px;text-align:center;font-size:1.8rem;">
+                  🏁
+                </div>
+              </div>
+
+              <!-- Título -->
+              <h1 style="margin:0 0 12px;font-size:1.35rem;font-weight:800;color:#eeeae6;text-align:center;letter-spacing:0.5px;">
+                ¡Confirma tu cuenta!
+              </h1>
+
+              <!-- Subtítulo -->
+              <p style="margin:0 0 28px;font-size:0.92rem;color:rgba(238,234,230,0.55);text-align:center;line-height:1.6;">
+                Estás a un paso de unirte a la comunidad de karting más grande de España. Haz clic en el botón para verificar tu correo y activar tu cuenta.
+              </p>
+
+              <!-- Botón CTA -->
+              <div style="text-align:center;margin-bottom:32px;">
+                <a href="{{ .ConfirmationURL }}"
+                   style="display:inline-block;background:#cc000b;color:#ffffff;font-weight:700;font-size:0.95rem;letter-spacing:0.5px;text-decoration:none;padding:14px 36px;border-radius:8px;border:none;">
+                  ✅ &nbsp;Confirmar mi correo
+                </a>
+              </div>
+
+              <!-- Divider -->
+              <div style="border-top:1px solid rgba(255,255,255,0.07);margin-bottom:24px;"></div>
+
+              <!-- Info adicional -->
+              <p style="margin:0 0 8px;font-size:0.8rem;color:rgba(238,234,230,0.35);text-align:center;line-height:1.6;">
+                Si el botón no funciona, copia y pega este enlace en tu navegador:
+              </p>
+              <p style="margin:0;font-size:0.75rem;word-break:break-all;color:rgba(225,6,0,0.7);text-align:center;line-height:1.5;">
+                {{ .ConfirmationURL }}
+              </p>
+
+            </td>
+          </tr>
+
+          <!-- Features rápidas -->
+          <tr>
+            <td style="padding:0 40px 36px;">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <!-- Pistas -->
+                  <td width="33%" style="text-align:center;padding:12px 8px;background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);border-radius:10px;">
+                    <div style="font-size:1.3rem;margin-bottom:4px;">🗺️</div>
+                    <div style="font-size:0.7rem;font-weight:700;color:rgba(238,234,230,0.7);letter-spacing:0.5px;text-transform:uppercase;">Pistas</div>
+                    <div style="font-size:0.65rem;color:rgba(238,234,230,0.35);margin-top:2px;">Todas en España</div>
+                  </td>
+                  <!-- Espacio -->
+                  <td width="4%"></td>
+                  <!-- Escuderías -->
+                  <td width="33%" style="text-align:center;padding:12px 8px;background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);border-radius:10px;">
+                    <div style="font-size:1.3rem;margin-bottom:4px;">🏎️</div>
+                    <div style="font-size:0.7rem;font-weight:700;color:rgba(238,234,230,0.7);letter-spacing:0.5px;text-transform:uppercase;">Escuderías</div>
+                    <div style="font-size:0.65rem;color:rgba(238,234,230,0.35);margin-top:2px;">Únete o crea</div>
+                  </td>
+                  <!-- Espacio -->
+                  <td width="4%"></td>
+                  <!-- Carreras -->
+                  <td width="33%" style="text-align:center;padding:12px 8px;background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);border-radius:10px;">
+                    <div style="font-size:1.3rem;margin-bottom:4px;">🏆</div>
+                    <div style="font-size:0.7rem;font-weight:700;color:rgba(238,234,230,0.7);letter-spacing:0.5px;text-transform:uppercase;">Carreras</div>
+                    <div style="font-size:0.65rem;color:rgba(238,234,230,0.35);margin-top:2px;">Compite y rankea</div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background:rgba(10,8,16,0.8);border-top:1px solid rgba(255,255,255,0.05);padding:20px 40px;text-align:center;">
+              <p style="margin:0 0 4px;font-size:0.72rem;color:rgba(238,234,230,0.3);">
+                Has recibido este correo porque te registraste en
+                <strong style="color:rgba(238,234,230,0.5);">karts<span style="color:#e10600;">4</span>spain</strong>.
+              </p>
+              <p style="margin:0;font-size:0.7rem;color:rgba(238,234,230,0.2);">
+                Si no fuiste tú, puedes ignorar este mensaje.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Franja roja inferior -->
+          <tr>
+            <td style="height:3px;background:linear-gradient(90deg,transparent 0%,#7a0000 15%,#c8000a 50%,#7a0000 85%,transparent 100%);font-size:0;line-height:0;">&nbsp;</td>
+          </tr>
+
+        </table>
+        <!-- /Card -->
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>

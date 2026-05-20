@@ -1,0 +1,422 @@
+<app-header></app-header>
+
+<main class="pistas-page">
+
+  <!-- ── HERO ── -->
+  <section class="pistas-hero">
+    <div class="hero-inner">
+      <span class="hero-badge">CIRCUITOS</span>
+      <h1 class="hero-title">Pistas de Karts en España</h1>
+      <p class="hero-sub">Descubre todos los circuitos disponibles y encuentra el tuyo</p>
+    </div>
+  </section>
+
+  <!-- ── FILTROS ── -->
+  <section class="filtros-bar">
+    <div class="filtros-inner">
+      <div class="buscador-wrap">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="ico-search">
+          <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" class="buscador-pista" placeholder="Buscar pista..." [(ngModel)]="filtroBuscar" (ngModelChange)="aplicarFiltros()">
+      </div>
+      <select [(ngModel)]="filtroCCAA"    (ngModelChange)="aplicarFiltros()">
+        <option value="">Todas las CC.AA.</option>
+        <option *ngFor="let c of ccaas"    [value]="c">{{ c }}</option>
+      </select>
+      <select [(ngModel)]="filtroTipo"    (ngModelChange)="aplicarFiltros()">
+        <option value="">Todos los motores</option>
+        <option *ngFor="let t of tipos"    [value]="t">{{ t }}</option>
+      </select>
+      <select [(ngModel)]="filtroEntorno" (ngModelChange)="aplicarFiltros()">
+        <option value="">Todos los entornos</option>
+        <option *ngFor="let e of entornos" [value]="e">{{ e }}</option>
+      </select>
+      <!-- Toggle solo favoritas (visible únicamente si el usuario está logueado) -->
+      <button *ngIf="idUsuario"
+              class="btn-favoritas-toggle"
+              [class.activo]="soloFavoritas"
+              (click)="soloFavoritas = !soloFavoritas; aplicarFiltros()"
+              title="Mostrar solo mis favoritas">
+        <i class="bi" [class.bi-heart-fill]="soloFavoritas" [class.bi-heart]="!soloFavoritas"></i>
+        Solo favoritas
+      </button>
+      <button class="btn-reset" (click)="resetFiltros()">Limpiar</button>
+      <span class="contador-pistas">{{ filtradas.length }} pistas</span>
+    </div>
+  </section>
+
+  <!-- ── LISTA ── -->
+  <section class="pistas-lista-section">
+
+    <div *ngIf="cargando" class="loading-msg">Cargando pistas...</div>
+    <div *ngIf="!cargando && filtradas.length === 0" class="empty-msg">No se encontraron pistas con esos filtros.</div>
+
+    <div class="pistas-lista" *ngIf="!cargando && filtradas.length > 0">
+      <article class="pista-row" *ngFor="let pista of paginadas">
+
+        <!-- AVATAR CIRCULAR -->
+        <div class="pista-avatar">
+          <img *ngIf="pista.foto" [src]="pista.foto" [alt]="pista.nombre">
+          <span *ngIf="!pista.foto">{{ pista.nombre.slice(0,2).toUpperCase() }}</span>
+        </div>
+
+        <!-- INFO + RATING -->
+        <div class="pista-info">
+          <div class="pista-nombre">{{ pista.nombre }}</div>
+          <div class="pista-meta">
+            <span class="meta-chip"><i class="bi bi-geo-alt-fill"></i> {{ pista.ccaa || '—' }}</span>
+            <span class="meta-chip"><i class="bi bi-house-door-fill"></i> {{ pista.entorno || '—' }}</span>
+            <span class="meta-tipo">{{ pista.tipo_kart || '—' }}</span>
+          </div>
+
+          <!-- ESTRELLAS -->
+          <div class="pista-stars-wrap">
+            <div class="stars-row"
+                 (mouseleave)="pista.notaHover = 0"
+                 [title]="pista.miNota > 0 ? 'Clic en tu nota para quitarla' : (idUsuario ? 'Haz clic para valorar' : 'Inicia sesión para valorar')">
+              <span *ngFor="let s of starArray(5)"
+                    class="star"
+                    [class.activa]="estrActiva(pista, s)"
+                    [class.mitad]="estrMitad(pista, s)"
+                    [class.media]="estrMedia(pista, s)"
+                    [class.media-mitad]="estrMediaMitad(pista, s)"
+                    [class.clickable]="!!idUsuario"
+                    [class.quitar]="esTipEstrella(pista, s)"
+                    (mousemove)="idUsuario && moverEstrella($event, pista, s)"
+                    (click)="votarNota(pista, pista.notaHover || s)">★</span>
+            </div>
+            <span class="stars-meta" *ngIf="pista.totalValoraciones > 0">
+              {{ pista.mediaNotas.toFixed(1) }} ({{ pista.totalValoraciones }})
+            </span>
+            <span class="stars-meta sin-votos" *ngIf="pista.totalValoraciones === 0">Sin valoraciones</span>
+            <span class="mi-nota-chip" *ngIf="pista.miNota > 0">Tu nota: {{ pista.miNota }}★</span>
+          </div>
+        </div>
+
+        <!-- BOTONES -->
+        <div class="pista-actions">
+          <button class="btn-pista btn-fav" [class.fav-activa]="pista.esFavorita"
+                  (click)="toggleFavorita(pista, $event)"
+                  [title]="pista.esFavorita ? 'Quitar de favoritos' : 'Añadir a favoritos'"
+                  [disabled]="pista.guardandoFav">
+            <i class="bi" [class.bi-heart-fill]="pista.esFavorita" [class.bi-heart]="!pista.esFavorita"></i>
+          </button>
+          <button class="btn-pista btn-share" (click)="compartirPista(pista, $event)" title="Compartir circuito">
+            <i class="bi bi-link-45deg"></i>
+          </button>
+          <a *ngIf="pista.url" [href]="pista.url" target="_blank" rel="noopener" class="btn-pista btn-web" title="Ver web">
+            <i class="bi bi-globe2"></i> Web
+          </a>
+          <button class="btn-pista btn-social" (click)="irASocial(pista)" title="Chat y carreras sociales">
+            <i class="bi bi-chat-dots-fill"></i> Social
+          </button>
+          <button class="btn-pista btn-carreras" (click)="abrirCarreras(pista)" title="Ver y crear carreras">
+            <i class="bi bi-flag-fill"></i> Carreras
+          </button>
+          <button class="btn-pista btn-resenas" (click)="abrirResenas(pista, $event)" title="Ver reseñas de la comunidad">
+            <i class="bi bi-star-fill"></i> Reseñas
+          </button>
+          <button class="btn-pista btn-info" (click)="abrirInfo(pista)" title="Ver información">
+            <i class="bi bi-info-circle-fill"></i> Info
+          </button>
+        </div>
+
+      </article>
+    </div>
+
+    <!-- PAGINACIÓN -->
+    <nav class="paginacion" *ngIf="totalPaginas > 1">
+      <button class="pag-arrow" [disabled]="paginaActual === 1" (click)="irPagina(1)">«</button>
+      <button class="pag-arrow" [disabled]="paginaActual === 1" (click)="irPagina(paginaActual - 1)">‹</button>
+      <ng-container *ngFor="let p of paginas">
+        <button *ngIf="p !== '…'" class="pag-btn" [class.activa]="p === paginaActual" (click)="irPagina(p)">{{ p }}</button>
+        <span   *ngIf="p === '…'" class="pag-ellipsis">…</span>
+      </ng-container>
+      <button class="pag-arrow" [disabled]="paginaActual === totalPaginas" (click)="irPagina(paginaActual + 1)">›</button>
+      <button class="pag-arrow" [disabled]="paginaActual === totalPaginas" (click)="irPagina(totalPaginas)">»</button>
+    </nav>
+  </section>
+
+</main>
+
+<!-- ══ MODAL INFO ══════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" *ngIf="pistaSeleccionada" (click)="cerrarInfo()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <button class="modal-close" (click)="cerrarInfo()">✕</button>
+
+    <div class="minfo-foto-wrap">
+      <img *ngIf="pistaSeleccionada.foto" [src]="pistaSeleccionada.foto" [alt]="pistaSeleccionada.nombre" class="minfo-foto">
+      <div *ngIf="!pistaSeleccionada.foto" class="minfo-foto-ph">
+        <span class="minfo-foto-iniciales">{{ pistaSeleccionada.nombre.slice(0,2).toUpperCase() }}</span>
+      </div>
+    </div>
+
+    <div class="minfo-body">
+      <h2 class="minfo-nombre">{{ pistaSeleccionada.nombre }}</h2>
+
+      <!-- Rating en modal -->
+      <div class="minfo-rating">
+        <div class="stars-row modal-stars"
+             (mouseleave)="pistaSeleccionada.notaHover = 0"
+             [title]="pistaSeleccionada.miNota > 0 ? 'Clic en tu nota para quitarla' : (idUsuario ? 'Haz clic para valorar' : 'Inicia sesión para valorar')">
+          <span *ngFor="let s of starArray(5)"
+                class="star"
+                [class.activa]="estrActiva(pistaSeleccionada, s)"
+                [class.mitad]="estrMitad(pistaSeleccionada, s)"
+                [class.media]="estrMedia(pistaSeleccionada, s)"
+                [class.media-mitad]="estrMediaMitad(pistaSeleccionada, s)"
+                [class.clickable]="!!idUsuario"
+                [class.quitar]="esTipEstrella(pistaSeleccionada, s)"
+                (mousemove)="idUsuario && moverEstrella($event, pistaSeleccionada, s)"
+                (click)="votarNota(pistaSeleccionada, pistaSeleccionada.notaHover || s)">★</span>
+        </div>
+        <span class="minfo-rating-txt" *ngIf="pistaSeleccionada.totalValoraciones > 0">
+          {{ pistaSeleccionada.mediaNotas.toFixed(1) }}/5 · {{ pistaSeleccionada.totalValoraciones }} valoracion{{ pistaSeleccionada.totalValoraciones !== 1 ? 'es' : '' }}
+        </span>
+        <span class="minfo-rating-txt" *ngIf="pistaSeleccionada.totalValoraciones === 0">Sin valoraciones aún</span>
+      </div>
+
+      <div class="minfo-grid">
+        <div class="minfo-field">
+          <span class="minfo-label">Comunidad autónoma</span>
+          <span class="minfo-val">{{ pistaSeleccionada.ccaa || '—' }}</span>
+        </div>
+        <div class="minfo-field">
+          <span class="minfo-label">Tipo de motor</span>
+          <span class="minfo-val">{{ pistaSeleccionada.tipo_kart || '—' }}</span>
+        </div>
+        <div class="minfo-field">
+          <span class="minfo-label">Entorno</span>
+          <span class="minfo-val">{{ pistaSeleccionada.entorno || '—' }}</span>
+        </div>
+        <div class="minfo-field" *ngIf="pistaSeleccionada.lat && pistaSeleccionada.lng">
+          <span class="minfo-label">Coordenadas</span>
+          <span class="minfo-val">{{ pistaSeleccionada.lat.toFixed(4) }}, {{ pistaSeleccionada.lng.toFixed(4) }}</span>
+        </div>
+      </div>
+
+      <div class="minfo-acciones">
+        <a *ngIf="pistaSeleccionada.url" [href]="pistaSeleccionada.url" target="_blank" rel="noopener" class="minfo-web-btn">
+          <i class="bi bi-globe2"></i> Visitar web oficial
+        </a>
+        <button class="minfo-social-btn" (click)="cerrarInfo(); irASocial(pistaSeleccionada)">
+          <i class="bi bi-chat-dots-fill"></i> Ir al Social
+        </button>
+        <button class="minfo-share-btn" (click)="compartirPista(pistaSeleccionada)">
+          <i class="bi bi-link-45deg"></i> Compartir
+        </button>
+        <button class="minfo-fav-btn" [class.fav-activa]="pistaSeleccionada.esFavorita"
+                (click)="toggleFavorita(pistaSeleccionada)"
+                [disabled]="pistaSeleccionada.guardandoFav">
+          <i class="bi" [class.bi-heart-fill]="pistaSeleccionada.esFavorita" [class.bi-heart]="!pistaSeleccionada.esFavorita"></i>
+          {{ pistaSeleccionada.esFavorita ? 'En favoritos' : 'Favorito' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL CARRERAS ══════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" *ngIf="pistaCarreras" (click)="cerrarCarreras()">
+  <div class="modal-box modal-carreras" (click)="$event.stopPropagation()">
+    <button class="modal-close" (click)="cerrarCarreras()">✕</button>
+
+    <div class="mcar-header">
+      <span class="mcar-badge"><i class="bi bi-flag-fill"></i> CARRERAS</span>
+      <h2 class="mcar-titulo">{{ pistaCarreras.nombre }}</h2>
+      <p class="mcar-sub">Carreras programadas en este circuito</p>
+    </div>
+
+    <div *ngIf="cargandoCarreras" class="mcar-loading">Cargando carreras...</div>
+
+    <ng-container *ngIf="!cargandoCarreras">
+
+      <!-- ── CARRERAS ABIERTAS ── -->
+      <div class="mcar-seccion">
+        <div class="mcar-seccion-header">
+          <h3 class="mcar-seccion-titulo">
+            <i class="bi bi-globe2"></i> Carreras abiertas
+          </h3>
+          <button class="btn-nueva-carrera" *ngIf="idUsuario && !mostrarFormNuevaCarrera"
+                  (click)="abrirFormNuevaCarrera()">
+            <i class="bi bi-plus-circle-fill"></i> Nueva carrera
+          </button>
+        </div>
+
+        <!-- FORMULARIO NUEVA CARRERA -->
+        <div class="mcar-form-nueva" *ngIf="mostrarFormNuevaCarrera">
+          <div class="mcar-form-titulo">
+            <i class="bi bi-flag-fill"></i> Crear carrera abierta
+          </div>
+          <div class="mcar-form-campo">
+            <label>Título *</label>
+            <input type="text" [(ngModel)]="nuevaCarreraTitulo"
+                   placeholder="Nombre de la carrera..."
+                   maxlength="100">
+          </div>
+          <div class="mcar-form-campo">
+            <label>Descripción</label>
+            <textarea [(ngModel)]="nuevaCarreraDescripcion"
+                      placeholder="Información adicional (opcional)..."
+                      rows="2" maxlength="300"></textarea>
+          </div>
+          <div class="mcar-form-campo">
+            <label>Fecha y hora *</label>
+            <input type="datetime-local" [(ngModel)]="nuevaCarreraFechaHora">
+          </div>
+          <p class="mcar-form-error" *ngIf="errorNuevaCarrera">{{ errorNuevaCarrera }}</p>
+          <div class="mcar-form-acciones">
+            <button class="btn-cancelar-form" (click)="cerrarFormNuevaCarrera()" [disabled]="creandoCarrera">
+              Cancelar
+            </button>
+            <button class="btn-crear-form" (click)="crearCarreraAbierta()" [disabled]="creandoCarrera">
+              <ng-container *ngIf="!creandoCarrera"><i class="bi bi-check-circle-fill"></i> Crear</ng-container>
+              <ng-container *ngIf="creandoCarrera">Creando...</ng-container>
+            </button>
+          </div>
+        </div>
+
+        <!-- LISTA CARRERAS ABIERTAS -->
+        <div class="mcar-empty" *ngIf="carrerasAbiertas.length === 0 && !mostrarFormNuevaCarrera">
+          <i class="bi bi-flag" style="opacity:0.3;font-size:1.4rem;"></i>
+          <span>No hay carreras abiertas próximas en este circuito.</span>
+          <p class="mcar-hint" *ngIf="!idUsuario">Inicia sesión para organizar una carrera aquí.</p>
+          <p class="mcar-hint" *ngIf="idUsuario">¡Sé el primero en organizar una!</p>
+        </div>
+
+        <ul class="mcar-lista" *ngIf="carrerasAbiertas.length > 0">
+          <li class="mcar-item mcar-item-abierta" *ngFor="let c of carrerasAbiertas">
+            <div class="mcar-item-fecha">{{ formatFecha(c.fecha_hora) }}</div>
+            <div class="mcar-item-info">
+              <strong class="mcar-item-titulo">{{ c.titulo }}</strong>
+              <span class="mcar-item-desc" *ngIf="c.descripcion">{{ c.descripcion }}</span>
+              <span class="mcar-item-creador">Organizada por <b>{{ c.username_creador }}</b></span>
+              <!-- Inscritos -->
+              <div class="carrera-inscritos" *ngIf="inscritosDeCarrera(c.id).length > 0">
+                <div class="ci-avatares">
+                  <div class="ci-avatar" *ngFor="let ins of inscritosDeCarrera(c.id).slice(0,5)" [title]="ins.username">
+                    <img *ngIf="ins.foto_perfil" [src]="ins.foto_perfil" [alt]="ins.username">
+                    <span *ngIf="!ins.foto_perfil">{{ ins.username.slice(0,2).toUpperCase() }}</span>
+                  </div>
+                  <span class="ci-mas" *ngIf="inscritosDeCarrera(c.id).length > 5">+{{ inscritosDeCarrera(c.id).length - 5 }}</span>
+                </div>
+                <span class="ci-count">{{ inscritosDeCarrera(c.id).length }} apuntado{{ inscritosDeCarrera(c.id).length !== 1 ? 's' : '' }}</span>
+              </div>
+            </div>
+            <div class="mcar-item-acciones">
+              <button class="btn-apuntarse"
+                      *ngIf="idUsuario"
+                      [class.apuntado]="yaApuntado(c.id)"
+                      [disabled]="apuntandoCarreraId === c.id"
+                      (click)="toggleInscripcion(c.id)"
+                      [title]="yaApuntado(c.id) ? 'Desapuntarse' : 'Apuntarse'">
+                <ng-container *ngIf="apuntandoCarreraId !== c.id">
+                  <i class="bi" [class.bi-person-check-fill]="yaApuntado(c.id)" [class.bi-person-plus-fill]="!yaApuntado(c.id)"></i>
+                  {{ yaApuntado(c.id) ? 'Apuntado' : 'Apuntarse' }}
+                </ng-container>
+                <ng-container *ngIf="apuntandoCarreraId === c.id">...</ng-container>
+              </button>
+              <span class="mcar-item-badge-abierta"><i class="bi bi-people-fill"></i> Abierta</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- ── CARRERAS DE ESCUDERÍAS ── -->
+      <div class="mcar-seccion mcar-seccion-clan">
+        <div class="mcar-seccion-header">
+          <h3 class="mcar-seccion-titulo">
+            <i class="bi bi-shield-fill"></i> Carreras de escuderías
+          </h3>
+        </div>
+
+        <div class="mcar-empty" *ngIf="carreras.length === 0">
+          <span>No hay carreras de escuderías próximas aquí.</span>
+          <p *ngIf="!idEscuderiaUsuario" class="mcar-hint">Únete a una escudería para organizar este tipo de carreras.</p>
+        </div>
+
+        <ul class="mcar-lista" *ngIf="carreras.length > 0">
+          <li class="mcar-item" *ngFor="let c of carreras">
+            <div class="mcar-item-fecha">{{ formatFecha(c.fecha_hora) }}</div>
+            <div class="mcar-item-info">
+              <strong class="mcar-item-titulo">{{ c.titulo }}</strong>
+              <span class="mcar-item-desc" *ngIf="c.descripcion">{{ c.descripcion }}</span>
+              <span class="mcar-item-creador">Organizada por <b>{{ c.username_creador }}</b></span>
+            </div>
+          </li>
+        </ul>
+
+        <div class="mcar-nota" *ngIf="idEscuderiaUsuario">
+          <p>Para crear una carrera de escudería, ve a tu <a [routerLink]="['/mi-escuderia', idEscuderiaUsuario]" (click)="cerrarCarreras()">escudería</a>.</p>
+        </div>
+      </div>
+
+    </ng-container>
+  </div>
+</div>
+
+<!-- ══ MODAL RESEÑAS ═══════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" *ngIf="pistaResenas" (click)="cerrarResenas()">
+  <div class="modal-box modal-resenas" (click)="$event.stopPropagation()">
+    <button class="modal-close" (click)="cerrarResenas()">✕</button>
+
+    <div class="mcar-header">
+      <span class="mcar-badge"><i class="bi bi-star-fill"></i> RESEÑAS</span>
+      <h2 class="mcar-titulo">{{ pistaResenas.nombre }}</h2>
+      <p class="mcar-sub">Opiniones de la comunidad sobre este circuito</p>
+    </div>
+
+    <div *ngIf="cargandoResenas" class="mcar-loading">Cargando reseñas...</div>
+
+    <div *ngIf="!cargandoResenas && resenasPista.length === 0" class="mcar-empty">
+      <i class="bi bi-star" style="font-size:1.5rem;opacity:0.4;"></i>
+      <p>Todavía no hay reseñas para este circuito.</p>
+      <p class="mcar-hint">Sé el primero en opinar en la <a [routerLink]="['/social', pistaResenas.id_pista]" (click)="cerrarResenas()">página social de la pista</a>.</p>
+    </div>
+
+    <ul class="mres-lista" *ngIf="!cargandoResenas && resenasPista.length > 0">
+      <li class="mres-item" *ngFor="let r of resenasPista">
+        <div class="mres-avatar">
+          <img *ngIf="r.foto_perfil" [src]="r.foto_perfil" [alt]="r.username">
+          <span *ngIf="!r.foto_perfil">{{ r.initials }}</span>
+        </div>
+        <div class="mres-info">
+          <div class="mres-meta">
+            <span class="mres-username">{{ r.username }}</span>
+            <span class="mres-fecha">{{ formatFechaCorta(r.created_at) }}</span>
+          </div>
+          <div class="mres-stars">
+            <span *ngFor="let s of [1,2,3,4,5]" class="mres-star" [class.activa]="starResenaDisplay(r.nota, s)">★</span>
+            <span class="mres-nota-txt">{{ r.nota }}/5</span>
+            <ng-container *ngIf="r.nota_asfalto">
+              <span class="mres-asfalto-sep">·</span>
+              <span class="mres-asfalto-lbl">Asfalto:</span>
+              <span *ngFor="let s of [1,2,3,4,5]" class="mres-star mres-star-asf" [class.activa]="starResenaDisplay(r.nota_asfalto, s)">★</span>
+            </ng-container>
+          </div>
+          <p *ngIf="r.comentario" class="mres-comentario">{{ r.comentario }}</p>
+        </div>
+      </li>
+    </ul>
+
+    <!-- Botón cargar más reseñas -->
+    <div class="mres-cargar-mas" *ngIf="!cargandoResenas && hayMasResenas">
+      <button class="btn-cargar-mas" (click)="cargarMasResenas()" [disabled]="cargandoMasResenas">
+        <ng-container *ngIf="!cargandoMasResenas">
+          <i class="bi bi-chevron-down"></i> Cargar más ({{ resenasTotal - resenasPista.length }} restantes)
+        </ng-container>
+        <ng-container *ngIf="cargandoMasResenas">Cargando...</ng-container>
+      </button>
+    </div>
+
+    <div class="mcar-nota" *ngIf="!cargandoResenas">
+      <p>¿Quieres dejar tu reseña? <a [routerLink]="['/social', pistaResenas.id_pista]" (click)="cerrarResenas()">Visita la página social de esta pista</a>.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TOAST ══════════════════════════════════════════════════════════════════ -->
+<div class="toast-notif" *ngIf="toastMsg">{{ toastMsg }}</div>
+
+<app-footer></app-footer>

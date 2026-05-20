@@ -1,0 +1,94 @@
+<app-header></app-header>
+
+<!-- PANEL DE FILTROS -->
+<div class="filter-dashboard">
+  <div class="filter-header">
+    <h2 class="filter-title"><i class="bi bi-funnel-fill"></i> CONFIGURACIÓN DE BÚSQUEDA</h2>
+    <div class="counter-pill">
+      <span class="counter-dot" [class.pulsing]="!cargando && pistasCount > 0"></span>
+      <span *ngIf="!cargando">{{ pistasCount }} PISTA{{ pistasCount !== 1 ? 'S' : '' }}</span>
+      <span *ngIf="cargando"><i class="bi bi-hourglass-split"></i> CARGANDO...</span>
+    </div>
+  </div>
+
+  <div class="filter-grid">
+
+    <div class="filter-group">
+      <label><i class="bi bi-geo-alt-fill"></i> REGIÓN</label>
+      <select [(ngModel)]="filtroCCAA" (change)="fetchAndRenderPistas()">
+        <option value="">Toda España</option>
+        <option value="Andalucía">Andalucía</option>
+        <option value="Aragón">Aragón</option>
+        <option value="Asturias">Asturias</option>
+        <option value="Baleares">Baleares</option>
+        <option value="Canarias">Canarias</option>
+        <option value="Cantabria">Cantabria</option>
+        <option value="Castilla y León">Castilla y León</option>
+        <option value="Castilla-La Mancha">Castilla-La Mancha</option>
+        <option value="Cataluña">Cataluña</option>
+        <option value="Comunidad Valenciana">Comunidad Valenciana</option>
+        <option value="Extremadura">Extremadura</option>
+        <option value="Galicia">Galicia</option>
+        <option value="La Rioja">La Rioja</option>
+        <option value="Madrid">Madrid</option>
+        <option value="Murcia">Murcia</option>
+        <option value="Navarra">Navarra</option>
+        <option value="País Vasco">País Vasco</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label><i class="bi bi-speedometer2"></i> MOTORIZACIÓN</label>
+      <select [(ngModel)]="filtroTipo" (change)="fetchAndRenderPistas()">
+        <option value="">Cualquier Categoría</option>
+        <option value="4T / Eléctrico">4T / Eléctrico</option>
+        <option value="4T (Gasolina)">4T (Gasolina)</option>
+        <option value="4T / 2T Comp.">Competición</option>
+        <option value="4T (Alquiler)">Alquiler</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label><i class="bi bi-house-door-fill"></i> ENTORNO</label>
+      <select [(ngModel)]="filtroEntorno" (change)="fetchAndRenderPistas()">
+        <option value="">Cualquier Entorno</option>
+        <option value="Indoor">Indoor</option>
+        <option value="Outdoor">Outdoor</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label><i class="bi bi-map-fill"></i> ESTILO MAPA</label>
+      <div class="estilo-btns">
+        <button
+          *ngFor="let e of estilos"
+          [class.active]="estiloActual === e.value"
+          (click)="cambiarEstilo(e.value)"
+          class="estilo-btn">
+          <i class="bi bi-{{ e.icon }}"></i> {{ e.label }}
+        </button>
+      </div>
+    </div>
+
+    <div class="filter-actions">
+      <button class="btn-reset" (click)="resetFilters()"><i class="bi bi-arrow-counterclockwise"></i> REINICIAR</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- MAPA -->
+<div class="map-section">
+  <div class="map-wrapper">
+    <div id="map"></div>
+    <!-- Mini-mapa Islas Canarias -->
+    <div class="canarias-inset">
+      <div class="canarias-inset-label"><i class="bi bi-geo-fill"></i> ISLAS CANARIAS · {{ canariasCount }} PISTAS</div>
+      <div class="canarias-map-wrap">
+        <div id="map-canarias"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer>

@@ -1,0 +1,108 @@
+<app-header></app-header>
+
+<div class="edit-container">
+    <div class="edit-card">
+        <div class="card-header">
+            <h2><i class="bi bi-sliders2"></i> AJUSTES DE PILOTO</h2>
+            <p class="subtitle">Configuración de carrera</p>
+        </div>
+
+        <div *ngIf="errorMsg" class="alert-msg alert-err"><i class="bi bi-exclamation-triangle-fill"></i> {{ errorMsg }}</div>
+        <div *ngIf="successMsg" class="alert-msg alert-ok"><i class="bi bi-check-circle-fill"></i> {{ successMsg }}</div>
+
+        <form (ngSubmit)="guardarCambios()">
+
+            <div class="profile-pic-section">
+                <div class="preview-container">
+                    <img [src]="user.foto_perfil || 'img/logoSinFondo.png'" alt="Avatar" class="avatar-preview">
+                </div>
+                <div class="upload-controls">
+                    <label>Foto de Perfil</label>
+                    <input type="file" #fileInput (change)="subirFoto($event)" accept="image/*" style="display: none;">
+                    <button type="button" class="btn-upload" (click)="fileInput.click()">
+                        <i class="bi bi-upload"></i> CARGAR DESDE MI PC
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Nickname</label>
+                <input type="text" [(ngModel)]="user.username" name="username" disabled>
+            </div>
+
+            <div class="form-group">
+                <label>Email (Privado)</label>
+                <input type="email" [(ngModel)]="user.email" name="email" disabled>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Nueva Contraseña <span class="optional">(opcional)</span></label>
+                    <div class="pass-wrapper">
+                        <input [type]="mostrarPass ? 'text' : 'password'"
+                               [(ngModel)]="newPassword" name="newPassword"
+                               placeholder="Dejar vacío para no cambiar"
+                               minlength="6">
+                        <button type="button" class="pass-toggle"
+                                (click)="mostrarPass = !mostrarPass"
+                                [title]="mostrarPass ? 'Ocultar' : 'Ver'">
+                            <i [class]="mostrarPass ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Repetir Contraseña</label>
+                    <div class="pass-wrapper">
+                        <input [type]="mostrarPass2 ? 'text' : 'password'"
+                               [(ngModel)]="repeatPassword" name="repeatPassword"
+                               placeholder="••••••••"
+                               [class.input-error]="repeatPassword.length > 0 && newPassword !== repeatPassword">
+                        <button type="button" class="pass-toggle"
+                                (click)="mostrarPass2 = !mostrarPass2"
+                                [title]="mostrarPass2 ? 'Ocultar' : 'Ver'">
+                            <i [class]="mostrarPass2 ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+                        </button>
+                    </div>
+                    <small *ngIf="repeatPassword.length > 0 && newPassword !== repeatPassword" class="pass-mismatch">
+                        Las contraseñas no coinciden
+                    </small>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Ubicación / Comunidad</label>
+                <select [(ngModel)]="user.comunidad_autonoma" name="comunidad">
+                    <option value="" disabled>Selecciona tu comunidad...</option>
+                    <option value="Andalucía">Andalucía</option>
+                    <option value="Aragón">Aragón</option>
+                    <option value="Asturias">Asturias</option>
+                    <option value="Baleares">Baleares</option>
+                    <option value="Canarias">Canarias</option>
+                    <option value="Cantabria">Cantabria</option>
+                    <option value="Castilla y León">Castilla y León</option>
+                    <option value="Castilla-La Mancha">Castilla-La Mancha</option>
+                    <option value="Cataluña">Cataluña</option>
+                    <option value="Valencia">Valencia</option>
+                    <option value="Extremadura">Extremadura</option>
+                    <option value="Galicia">Galicia</option>
+                    <option value="Madrid">Madrid</option>
+                    <option value="Murcia">Murcia</option>
+                    <option value="Navarra">Navarra</option>
+                    <option value="País Vasco">País Vasco</option>
+                    <option value="La Rioja">La Rioja</option>
+                    <option value="Ceuta">Ceuta</option>
+                    <option value="Melilla">Melilla</option>
+                </select>
+            </div>
+
+            <div class="actions">
+                <button type="submit" class="btn-save" [disabled]="cargando || !passwordsValidas">
+                    <span *ngIf="cargando" class="spinner"></span>
+                    {{ cargando ? 'Guardando…' : 'CONFIRMAR CAMBIOS' }}
+                </button>
+                <button type="button" (click)="cancelar()" class="btn-cancel">VOLVER ATRÁS</button>
+            </div>
+        </form>
+    </div>
+</div>

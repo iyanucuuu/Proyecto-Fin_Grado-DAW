@@ -1,0 +1,17 @@
+spring.application.name=karts4spain-api
+
+# ── Base de datos PostgreSQL (Supabase) ──────────────────────────────────────
+# Encuéntralo en: Supabase > Settings > Database > Connection string (URI)
+spring.datasource.url=jdbc:postgresql://db.TU_PROYECTO.supabase.co:5432/postgres?sslmode=require
+spring.datasource.username=postgres.TU_PROYECTO_ID
+spring.datasource.password=TU_PASSWORD_DE_SUPABASE
+
+# ── JPA / Hibernate ───────────────────────────────────────────────────────────
+spring.jpa.properties.hibernate.temp.use_jdbc_metadata_defaults=false
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.hibernate.ddl-auto=none
+spring.datasource.hikari.initialization-fail-timeout=0
+
+# ── Serialización JSON ────────────────────────────────────────────────────────
+# Responde en snake_case para alinearse con la nomenclatura del frontend Angular
+spring.jackson.property-naming-strategy=SNAKE_CASE

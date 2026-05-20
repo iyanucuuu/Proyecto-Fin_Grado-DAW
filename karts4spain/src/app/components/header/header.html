@@ -1,0 +1,152 @@
+<header>
+  <div class="header-content">
+
+    <!-- MARCA -->
+    <a routerLink="/inicio" class="brand-link" (click)="cerrarMenu()">
+      <span class="brand-text">KARTS<span class="brand-4">4</span>SPAIN</span>
+    </a>
+
+    <!-- HAMBURGER (mobile) -->
+    <button class="hamburger" (click)="menuAbierto = !menuAbierto" [class.abierto]="menuAbierto" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+
+    <!-- NAV -->
+    <nav [class.nav-abierto]="menuAbierto">
+      <a routerLink="/inicio"   routerLinkActive="active" (click)="cerrarMenu()">INICIO</a>
+      <a routerLink="/mapa"     routerLinkActive="active" (click)="cerrarMenu()">MAPA</a>
+      <a routerLink="/pistas"   routerLinkActive="active" (click)="cerrarMenu()">PISTAS</a>
+      <a routerLink="/social"   routerLinkActive="active" class="nav-social" (click)="cerrarMenu()">SOCIAL</a>
+      <a routerLink="/ranking"  routerLinkActive="active" (click)="cerrarMenu()">RANKING</a>
+      <a routerLink="/amigos"   routerLinkActive="active" class="nav-pilotos" (click)="cerrarMenu()">
+        PILOTOS
+        <span class="nav-badge" *ngIf="solicitudesPendientes > 0">{{ solicitudesPendientes }}</span>
+      </a>
+      <a routerLink="/cuenta"   routerLinkActive="active" class="cuenta-link" (click)="cerrarMenu()">
+        <div class="avatar-nav">
+          <img *ngIf="fotoPerfil" [src]="fotoPerfil" alt="avatar">
+          <span *ngIf="!fotoPerfil">{{ iniciales }}</span>
+        </div>
+        CUENTA
+      </a>
+
+      <!-- TOGGLE CLARO / OSCURO -->
+      <button class="theme-toggle" (click)="toggleTema()" [title]="modoClaro ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro'">
+        <svg *ngIf="modoClaro" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+          <circle cx="12" cy="12" r="4"/>
+          <path d="M12 2v2m0 16v2M4.22 4.22l1.42 1.42m12.72 12.72 1.42 1.42M2 12h2m16 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>
+        </svg>
+        <svg *ngIf="!modoClaro" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
+    </nav>
+
+  </div>
+</header>
+
+<!-- Overlay para cerrar menu móvil al tocar fuera -->
+<div class="nav-overlay" *ngIf="menuAbierto" (click)="cerrarMenu()"></div>
+
+<!-- BOCADILLO FLOTANTE: CARRERAS SIN RESULTADO -->
+<div class="resultados-alerta" *ngIf="carrerasSinResultado.length > 0 && !mostrarModalResultados">
+  <div class="resultados-alerta-inner">
+    <div class="resultados-alerta-icono">
+      <i class="bi bi-flag-fill"></i>
+    </div>
+    <div class="resultados-alerta-texto">
+      <strong>{{ carrerasSinResultado.length === 1 ? '¡Tienes una carrera sin resultado!' : 'Tienes ' + carrerasSinResultado.length + ' carreras sin resultado!' }}</strong>
+      <span>Pulsa para introducir las posiciones finales</span>
+    </div>
+    <div class="resultados-alerta-lista">
+      <button *ngFor="let c of carrerasSinResultado"
+              class="resultados-alerta-item"
+              (click)="abrirModalResultados(c)">
+        <span class="rai-titulo">{{ c.titulo }}</span>
+        <span class="rai-meta">{{ c.nombre_pista }} - {{ formatFechaCorta(c.fecha_hora) }}</span>
+        <span class="rai-cta">Poner resultado</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL RESULTADOS -->
+<div class="modal-overlay" *ngIf="mostrarModalResultados" (click)="cerrarModalResultados()">
+  <div class="modal-box modal-resultados" (click)="$event.stopPropagation()">
+    <button class="modal-close" (click)="cerrarModalResultados()">&#x2715;</button>
+    <h2 class="modal-titulo"><i class="bi bi-trophy-fill"></i> Resultado de carrera</h2>
+    <p class="modal-sub" *ngIf="carreraSeleccionada">
+      <strong>{{ carreraSeleccionada.titulo }}</strong>
+      <span *ngIf="carreraSeleccionada.nombre_pista"> - {{ carreraSeleccionada.nombre_pista }}</span>
+      - {{ formatFechaCorta(carreraSeleccionada.fecha_hora) }}
+    </p>
+
+    <!-- CARGANDO INSCRITOS -->
+    <div class="res-cargando" *ngIf="cargandoInscritos">
+      <div class="res-spinner"></div>
+      <span>Cargando participantes...</span>
+    </div>
+
+    <!-- SIN INSCRITOS -->
+    <div class="res-sin-inscritos" *ngIf="!cargandoInscritos && inscritos.length === 0">
+      <i class="bi bi-person-x" style="font-size:2rem;opacity:0.3;"></i>
+      <p>Nadie se apuntó a esta carrera.</p>
+      <p class="res-hint">Sin participantes inscritos no se puede registrar un resultado.</p>
+      <button class="btn-cancelar-modal" (click)="cerrarModalResultados()">Cerrar</button>
+    </div>
+
+    <!-- TABLA DE POSICIONES -->
+    <ng-container *ngIf="!cargandoInscritos && inscritos.length > 0">
+      <p class="modal-explicacion">
+        Asigna la posición final a cada piloto inscrito. Los puntos se calculan automáticamente (F1: 1º=25, 2º=18, 3º=15...).
+      </p>
+
+      <div class="res-tabla">
+        <div class="res-tabla-header">
+          <span>Piloto</span>
+          <span>Posición</span>
+          <span>Puntos</span>
+        </div>
+        <div class="res-fila" *ngFor="let inscrito of inscritos">
+          <!-- Avatar + nombre -->
+          <div class="res-piloto">
+            <div class="res-avatar">
+              <img *ngIf="inscrito.foto_perfil" [src]="inscrito.foto_perfil" [alt]="inscrito.username">
+              <span *ngIf="!inscrito.foto_perfil">{{ inscrito.username.slice(0,2).toUpperCase() }}</span>
+            </div>
+            <span class="res-username">{{ inscrito.username }}</span>
+          </div>
+          <!-- Selector de posición -->
+          <div class="res-pos-selector">
+            <button *ngFor="let pos of posicionesDisponibles"
+                    class="res-pos-btn"
+                    [class.oro]="inscrito.posicion === pos && pos === 1"
+                    [class.plata]="inscrito.posicion === pos && pos === 2"
+                    [class.bronce]="inscrito.posicion === pos && pos === 3"
+                    [class.seleccionado]="inscrito.posicion === pos"
+                    [class.ocupado]="inscrito.posicion !== pos && inscritos.some(x => x.posicion === pos)"
+                    (click)="asignarPosicion(inscrito, pos)">
+              {{ pos }}
+            </button>
+          </div>
+          <!-- Puntos -->
+          <span class="res-puntos" [class.res-puntos-activo]="inscrito.posicion > 0">
+            {{ inscrito.posicion > 0 ? (puntosParaPosicion(inscrito.posicion) + ' pts') : '—' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- ERROR -->
+      <p class="res-error" *ngIf="errorResultados">{{ errorResultados }}</p>
+
+      <!-- ACCIONES -->
+      <div class="modal-acciones">
+        <button class="btn-cancelar-modal" (click)="cerrarModalResultados()">Cancelar</button>
+        <button class="btn-crear-modal" (click)="guardarResultados()" [disabled]="guardandoResultados">
+          <ng-container *ngIf="!guardandoResultados"><i class="bi bi-check-circle-fill"></i> Guardar resultado</ng-container>
+          <ng-container *ngIf="guardandoResultados">Guardando...</ng-container>
+        </button>
+      </div>
+    </ng-container>
+  </div>
+</div>

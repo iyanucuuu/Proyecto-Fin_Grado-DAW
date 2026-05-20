@@ -1,0 +1,358 @@
+/* ─── LAYOUT ────────────────────────────────────────────────────────────────── */
+.perfil-publico-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 36px;
+  max-width: 1100px;
+  margin: 48px auto;
+  padding: 0 24px;
+  align-items: start;
+}
+
+/* ─── SIDEBAR ────────────────────────────────────────────────────────────────── */
+.sidebar-pub {
+  background: #2b2b2b;
+  border-left: 5px solid #e10600;
+  border-radius: 15px;
+  padding: 36px 28px;
+  text-align: center;
+  box-shadow: 10px 10px 30px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar-pub {
+  width: 120px; height: 120px;
+  background: linear-gradient(45deg, #e10600, #ff4444);
+  border-radius: 18px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.6rem; font-weight: bold; color: white;
+  border: 4px solid rgba(255,255,255,0.1);
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+.avatar-pub img { width: 100%; height: 100%; object-fit: cover; border-radius: 14px; }
+
+.pub-username {
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: #fff;
+  margin: 0;
+}
+
+.pub-email {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.4);
+  margin: 0;
+  word-break: break-all;
+}
+
+.badge-comunidad {
+  background: #e10600;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  display: inline-block;
+  margin-top: 2px;
+}
+
+.pub-fecha {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.4);
+  display: flex; align-items: center; gap: 5px;
+  margin: 0;
+}
+
+.pub-escuderia {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(225,6,0,0.1);
+  border: 1px solid rgba(225,6,0,0.25);
+  border-radius: 10px;
+  padding: 8px 14px;
+  width: 100%;
+  justify-content: center;
+}
+.pub-escuderia-logo  { font-size: 1.6rem; }
+.pub-escuderia-nombre {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #fff;
+}
+
+.logros-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(225,6,0,0.15);
+  border: 1px solid rgba(225,6,0,0.35);
+  color: #ff6b6b;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 20px;
+  letter-spacing: 0.4px;
+}
+
+/* Amistad */
+.pub-amistad  { width: 100%; margin-top: 4px; }
+
+.btn-solicitar {
+  background: #e10600;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-style: italic;
+  text-transform: uppercase;
+  font-size: 0.82rem;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  width: 100%;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: background 0.2s;
+}
+.btn-solicitar:hover:not(:disabled) { background: #c10500; }
+.btn-solicitar:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.pub-ya-amigos,
+.pub-solicitado {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.15);
+  padding: 9px 14px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.6);
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+}
+.pub-ya-amigos { color: #6be06b; border-color: rgba(107,224,107,0.25); background: rgba(107,224,107,0.08); }
+
+/* ─── CONTENIDO PRINCIPAL ────────────────────────────────────────────────────── */
+.main-pub { display: flex; flex-direction: column; gap: 28px; }
+
+.section-pub {
+  background: rgba(0,0,0,0.3);
+  border-left: 5px solid #e10600;
+  border-radius: 18px;
+  padding: 28px 30px;
+}
+
+.section-title-pub {
+  font-size: 1.1rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  font-style: italic;
+  letter-spacing: 1.5px;
+  margin-bottom: 18px;
+  background: linear-gradient(90deg, #ffffff 0%, #ff6b6b 60%, #e10600 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 2px 4px rgba(225,6,0,0.4));
+}
+
+.pub-muted { color: rgba(255,255,255,0.45); font-size: 0.9rem; }
+
+/* ─── ESTADÍSTICAS ────────────────────────────────────────────────────────────── */
+.stats-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.stat-box {
+  flex: 1;
+  min-width: 90px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 16px 12px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  transition: border-color 0.2s;
+}
+.stat-box:hover { border-color: rgba(225,6,0,0.4); }
+
+.stat-box-pos { border-color: rgba(225,6,0,0.3); background: rgba(225,6,0,0.08); }
+
+.stat-num {
+  font-size: 1.8rem;
+  font-weight: 900;
+  font-style: italic;
+  color: #fff;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: rgba(255,255,255,0.45);
+  font-weight: 600;
+}
+
+/* ─── LOGROS ─────────────────────────────────────────────────────────────────── */
+.logros-pub-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 12px;
+}
+
+.logro-pub {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 14px 10px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.logro-pub:hover { border-color: #e10600; transform: translateY(-2px); }
+
+.logro-pub-img  { width: 44px; height: 44px; object-fit: contain; border-radius: 8px; }
+.logro-pub-icon { font-size: 1.7rem; color: #e10600; }
+
+.logro-pub-nombre {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #fff;
+  line-height: 1.2;
+  margin: 0;
+}
+.logro-pub-fecha {
+  font-size: 0.62rem;
+  color: rgba(255,255,255,0.3);
+  margin: 0;
+}
+
+/* ─── NOT FOUND ─────────────────────────────────────────────────────────────── */
+.not-found-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  min-height: 50vh;
+  text-align: center;
+  padding: 40px 24px;
+}
+.not-found-icon {
+  font-size: 5rem;
+  color: rgba(255,255,255,0.15);
+}
+.not-found-wrap h2 {
+  font-size: 1.6rem;
+  font-style: italic;
+  text-transform: uppercase;
+  font-weight: 900;
+  color: rgba(255,255,255,0.7);
+}
+.not-found-wrap p { color: rgba(255,255,255,0.4); font-size: 0.95rem; }
+
+.btn-volver {
+  background: #e10600; color: white; border: none; padding: 12px 24px;
+  border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.9rem;
+  transition: background 0.2s;
+}
+.btn-volver:hover { background: #c10500; }
+
+/* ─── SKELETON ───────────────────────────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position:  600px 0; }
+}
+
+.skeleton-card .sk-title,
+.skeleton-card .sk-line,
+.skeleton-card .sk-stat,
+.skeleton-card .sk-avatar-big,
+.skeleton-card .sk-logro {
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.06) 0%,
+    rgba(255,255,255,0.14) 50%,
+    rgba(255,255,255,0.06) 100%
+  );
+  background-size: 600px 100%;
+  animation: shimmer 1.4s infinite linear;
+  border-radius: 8px;
+}
+.skeleton-card { pointer-events: none; }
+
+.sk-avatar-big { width: 120px; height: 120px; border-radius: 18px; margin: 0 auto 12px; }
+.sk-title { height: 18px; width: 50%; margin-bottom: 20px; }
+.sk-line  { height: 13px; margin-bottom: 10px; }
+.sk-line.w60 { width: 60%; }
+.sk-line.w40 { width: 40%; }
+.sk-line.w30 { width: 30%; }
+
+.sk-stats-row {
+  display: flex; gap: 16px; flex-wrap: wrap;
+}
+.sk-stat {
+  flex: 1; min-width: 80px; height: 72px; border-radius: 12px;
+}
+
+.sk-logros {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 12px;
+}
+.sk-logro { aspect-ratio: 1; border-radius: 12px; }
+
+/* ─── MODO CLARO ─────────────────────────────────────────────────────────────── */
+[data-theme="light"] .sidebar-pub { background: #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+[data-theme="light"] .pub-username { color: #18100f; }
+[data-theme="light"] .pub-email { color: rgba(24,16,15,0.4); }
+[data-theme="light"] .pub-fecha { color: rgba(24,16,15,0.4); }
+[data-theme="light"] .pub-ya-amigos { color: #1a7a1a; border-color: rgba(26,122,26,0.25); background: rgba(26,122,26,0.06); }
+[data-theme="light"] .pub-solicitado { color: rgba(24,16,15,0.5); }
+[data-theme="light"] .section-pub { background: #fff; box-shadow: 0 2px 14px rgba(0,0,0,0.06); }
+[data-theme="light"] .section-title-pub {
+  background: linear-gradient(90deg, #18100f 0%, #8b0000 60%, #c8000a 100%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: none;
+}
+[data-theme="light"] .stat-box { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.07); }
+[data-theme="light"] .stat-num { color: #18100f; }
+[data-theme="light"] .stat-label { color: rgba(24,16,15,0.45); }
+[data-theme="light"] .logro-pub { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.07); }
+[data-theme="light"] .logro-pub-nombre { color: #18100f; }
+[data-theme="light"] .pub-escuderia { background: rgba(225,6,0,0.06); }
+[data-theme="light"] .pub-escuderia-nombre { color: #18100f; }
+[data-theme="light"] .logros-badge { background: rgba(225,6,0,0.08); border-color: rgba(225,6,0,0.25); color: #c8000a; }
+[data-theme="light"] .pub-muted { color: rgba(24,16,15,0.45); }
+
+/* ─── RESPONSIVE ─────────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .perfil-publico-layout {
+    grid-template-columns: 1fr;
+    margin: 24px auto;
+    padding: 0 16px;
+    gap: 24px;
+  }
+  .sidebar-pub { order: -1; padding: 28px 20px; }
+  .stats-grid  { gap: 12px; }
+}
+
+@media (max-width: 600px) {
+  .logros-pub-grid { grid-template-columns: repeat(3, 1fr); }
+}

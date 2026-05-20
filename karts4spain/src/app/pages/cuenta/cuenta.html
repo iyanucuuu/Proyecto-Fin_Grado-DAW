@@ -1,0 +1,186 @@
+<app-header></app-header>
+
+<main class="profile-layout" *ngIf="userData; else cargando">
+  <div class="stats-container">
+
+    <!-- ESCUDERÍA -->
+    <section class="section-card escuderia-card">
+      <h3 class="section-title"><i class="bi bi-flag-fill"></i> MI ESCUDERÍA</h3>
+
+      <div *ngIf="userData.id_escuderia; else noEscuderia">
+        <div class="escuderia-header-box">
+          <span class="escuderia-logo-display">{{ userData.logo_escuderia }}</span>
+          <div class="escuderia-info">
+            <h4 class="escuderia-name">{{ userData.nombre_escuderia }}</h4>
+          </div>
+          <button class="btn-clan-racing btn-ir-escuderia" (click)="irAEscuderia()">
+            IR A LA ESCUDERÍA →
+          </button>
+        </div>
+        <button class="btn-logout-racing" (click)="abandonarClan()" [disabled]="abandonando"
+                style="margin-top: 16px; font-size: 0.8rem;">
+          ABANDONAR EQUIPO
+        </button>
+      </div>
+
+      <ng-template #noEscuderia>
+        <p class="small-muted" style="margin-bottom: 20px;">Aún no perteneces a ninguna escudería.</p>
+        <div class="botones-clan">
+          <button class="btn-clan-racing" routerLink="/buscador-clanes"><i class="bi bi-search"></i> BUSCAR ESCUDERÍA</button>
+          <button class="btn-clan-secondary" routerLink="/crear-clan"><i class="bi bi-plus-circle-fill"></i> FUNDAR EQUIPO</button>
+        </div>
+      </ng-template>
+    </section>
+
+    <!-- AMIGOS -->
+    <section class="section-card">
+      <h3 class="section-title"><i class="bi bi-people-fill"></i> MIS AMIGOS</h3>
+
+      <div *ngIf="amigos.length > 0; else sinAmigos" class="amigos-grid">
+        <div *ngFor="let amigo of amigos" class="amigo-item"
+             routerLink="/perfil/{{ amigo.username }}" title="Ver perfil de {{ amigo.username }}" style="cursor:pointer">
+          <div class="amigo-avatar">
+            <img *ngIf="amigo.foto_perfil" [src]="amigo.foto_perfil" [alt]="amigo.username">
+            <span *ngIf="!amigo.foto_perfil">{{ amigo.initials }}</span>
+          </div>
+          <p class="amigo-nombre">{{ amigo.username }}</p>
+        </div>
+      </div>
+
+      <ng-template #sinAmigos>
+        <p class="small-muted">Aún no tienes amigos añadidos.</p>
+      </ng-template>
+    </section>
+
+    <!-- LOGROS -->
+    <section class="section-card">
+      <h3 class="section-title"><i class="bi bi-trophy-fill"></i> TUS LOGROS</h3>
+
+      <p class="logros-hint" *ngIf="todosLogros.length > 0">
+        {{ totalDesbloqueados }} / {{ todosLogros.length }} desbloqueados
+        — <span class="logros-hint-tip">Pulsa en uno bloqueado para ver los requisitos</span>
+      </p>
+
+      <div *ngIf="todosLogros.length > 0; else sinLogros" class="logros-grid">
+        <div *ngFor="let logro of todosLogros"
+             class="logro-mini"
+             [class.locked]="!logro.desbloqueado"
+             [class.desbloqueado]="logro.desbloqueado"
+             [title]="logro.desbloqueado ? 'Pulsa para ver detalles' : 'Bloqueado — pulsa para ver requisitos'"
+             (click)="abrirTooltipLogro(logro, $event)">
+
+          <img *ngIf="logro.imagen_insignia"
+               [src]="logro.imagen_insignia"
+               [alt]="logro.nombre"
+               class="logro-img">
+          <i *ngIf="!logro.imagen_insignia && logro.desbloqueado"  class="bi bi-award-fill logro-icon"></i>
+          <i *ngIf="!logro.imagen_insignia && !logro.desbloqueado" class="bi bi-lock-fill  logro-icon logro-icon-lock"></i>
+
+          <p class="logro-nombre">{{ logro.nombre }}</p>
+          <p class="logro-fecha" *ngIf="logro.desbloqueado && logro.fecha_obtencion">
+            {{ logro.fecha_obtencion | date:'dd/MM/yyyy' }}
+          </p>
+        </div>
+      </div>
+
+      <ng-template #sinLogros>
+        <p class="small-muted">No se han encontrado logros en la plataforma.</p>
+      </ng-template>
+    </section>
+
+  </div>
+
+  <!-- SIDEBAR PERFIL -->
+  <aside class="sidebar-card">
+    <div class="sidebar-top">
+      <div class="avatar-perfil">
+        <img *ngIf="userData.foto_perfil" [src]="userData.foto_perfil" alt="Avatar">
+        <span *ngIf="!userData.foto_perfil">{{ initials }}</span>
+      </div>
+      <button class="btn-editar-perfil" (click)="irAEditar()"><i class="bi bi-pencil-square"></i> Editar Perfil</button>
+      <h2 class="username-title">{{ userData.username }}</h2>
+      <p class="small-muted">{{ userData.email || 'Piloto sin correo' }}</p>
+      <div class="badge-comunidad">{{ userData.comunidad_autonoma || 'España' }}</div>
+      <p class="fecha-creacion" *ngIf="userData.dia_creacion">
+        <i class="bi bi-calendar3"></i> Piloto desde {{ userData.dia_creacion | date:'dd/MM/yyyy' }}
+      </p>
+
+      <!-- Badge de logros desbloqueados -->
+      <div class="logros-badge" *ngIf="totalDesbloqueados > 0">
+        <i class="bi bi-trophy-fill"></i>
+        <span>{{ totalDesbloqueados }} logro{{ totalDesbloqueados !== 1 ? 's' : '' }}</span>
+      </div>
+    </div>
+    <button (click)="logout()" class="btn-logout-racing"><i class="bi bi-box-arrow-right"></i> CERRAR SESIÓN</button>
+  </aside>
+</main>
+
+<!-- ══ SKELETON LOADER ════════════════════════════════════════════════════════ -->
+<ng-template #cargando>
+  <div class="profile-layout skeleton-layout">
+    <div class="stats-container">
+      <div class="section-card skeleton-card">
+        <div class="sk-title"></div>
+        <div class="sk-line w60"></div>
+        <div class="sk-line w40"></div>
+      </div>
+      <div class="section-card skeleton-card">
+        <div class="sk-title"></div>
+        <div class="sk-avatares">
+          <div class="sk-avatar" *ngFor="let i of [1,2,3]"></div>
+        </div>
+      </div>
+      <div class="section-card skeleton-card">
+        <div class="sk-title"></div>
+        <div class="sk-logros">
+          <div class="sk-logro" *ngFor="let i of [1,2,3,4,5,6,7,8]"></div>
+        </div>
+      </div>
+    </div>
+    <aside class="sidebar-card skeleton-card">
+      <div class="sk-avatar-big"></div>
+      <div class="sk-line w70" style="margin:20px auto 8px"></div>
+      <div class="sk-line w50" style="margin:0 auto 8px"></div>
+      <div class="sk-line w30" style="margin:0 auto"></div>
+    </aside>
+  </div>
+</ng-template>
+
+<app-footer></app-footer>
+
+<!-- ══ TOAST LOGRO NUEVO ══════════════════════════════════════════════════════ -->
+<div class="toast-logro" *ngIf="toastLogro" (click)="toastLogro = ''">
+  {{ toastLogro }}
+</div>
+
+<!-- ══ BOCADILLO LOGRO (desbloqueado o bloqueado) ════════════════════════════ -->
+<div class="logro-bocata-overlay" *ngIf="logroTooltip" (click)="cerrarTooltipLogro()"></div>
+
+<div class="logro-bocata" *ngIf="logroTooltip" (click)="$event.stopPropagation()">
+  <button class="logro-bocata-close" (click)="cerrarTooltipLogro()">✕</button>
+
+  <div class="lb-icono">
+    <img *ngIf="logroTooltip.imagen_insignia" [src]="logroTooltip.imagen_insignia" [alt]="logroTooltip.nombre" class="lb-img">
+    <i *ngIf="!logroTooltip.imagen_insignia && logroTooltip.desbloqueado" class="bi bi-trophy-fill lb-lock-icon" style="color:#e8b800"></i>
+    <i *ngIf="!logroTooltip.imagen_insignia && !logroTooltip.desbloqueado" class="bi bi-lock-fill lb-lock-icon"></i>
+  </div>
+
+  <h4 class="lb-nombre">{{ logroTooltip.nombre }}</h4>
+  <p  class="lb-desc">{{ logroTooltip.descripcion }}</p>
+
+  <div *ngIf="logroTooltip.desbloqueado" class="lb-desbloqueado-info">
+    <i class="bi bi-check-circle-fill" style="color:#2ecc71"></i>
+    <span>Obtenido el {{ logroTooltip.fecha_obtencion | date:'dd/MM/yyyy' }}</span>
+  </div>
+
+  <div *ngIf="!logroTooltip.desbloqueado" class="lb-progreso-wrap">
+    <p class="lb-hint">¡Sigue compitiendo para desbloquear este logro!</p>
+  </div>
+</div>
+
+<!-- MODAL ESCUDERÍA -->
+<app-clan-modal
+  *ngIf="mostrarClanModal && userData?.id_escuderia"
+  [idEscuderia]="userData.id_escuderia"
+  (cerrar)="mostrarClanModal = false">
+</app-clan-modal>

@@ -1,0 +1,73 @@
+<app-header></app-header>
+
+<div class="main-container">
+    <div class="form-card">
+        <h2 class="racing-title"><i class="bi bi-shield-fill"></i> FUNDAR ESCUDERÍA</h2>
+
+        <!-- Mensaje de error si la creación falla -->
+        <div *ngIf="errorMsg" class="error-alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> {{ errorMsg }}
+        </div>
+
+        <form (ngSubmit)="guardarEscuderia()">
+
+            <div class="input-box">
+                <label>Nombre del Equipo</label>
+                <input
+                    type="text"
+                    [(ngModel)]="escuderia.nombre"
+                    name="nombre"
+                    placeholder="Ej: Scuderia Roja..."
+                    required>
+            </div>
+
+            <div class="emblema-section">
+                <label class="label-section">SELECCIONA TU EMBLEMA</label>
+                <div class="emblema-grid">
+                    <div
+                        *ngFor="let emblema of emblemas"
+                        class="emblema-item"
+                        [class.selected]="escuderia.logo_url === emblema.icono"
+                        (click)="seleccionarEmblema(emblema.icono)">
+                        <span>{{ emblema.icono }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-box">
+                <label><i class="bi bi-geo-alt-fill"></i> Comunidad Autónoma</label>
+                <select [(ngModel)]="escuderia.comunidad_autonoma" name="comunidad_autonoma" required>
+                    <option value="">Selecciona tu comunidad...</option>
+                    <option *ngFor="let c of comunidades" [value]="c">{{ c }}</option>
+                </select>
+            </div>
+
+            <div class="input-box">
+                <label><i class="bi bi-people-fill"></i> Capacidad: <strong>{{ escuderia.max_miembros }} pilotos</strong></label>
+                <input type="range" min="2" max="50" [(ngModel)]="escuderia.max_miembros" name="max_miembros" class="range-slider">
+            </div>
+
+            <div class="input-box">
+                <label>Descripción <span style="opacity: 0.5; font-size: 0.8rem;">(opcional)</span></label>
+                <textarea
+                    [(ngModel)]="escuderia.descripcion"
+                    name="descripcion"
+                    rows="3"
+                    placeholder="Cuéntanos sobre tu escudería..."></textarea>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn-confirmar" [disabled]="cargando || !escuderia.nombre || !escuderia.comunidad_autonoma">
+                    <span *ngIf="!cargando"><i class="bi bi-check-circle-fill"></i> CONFIRMAR FUNDACIÓN</span>
+                    <span *ngIf="cargando"><span class="spinner"></span> PROCESANDO...</span>
+                </button>
+                <a routerLink="/cuenta" class="btn-volver">
+                    ← VOLVER AL PERFIL
+                </a>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<app-footer></app-footer>

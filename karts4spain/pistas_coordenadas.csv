@@ -1,0 +1,98 @@
+id_pista,nombre,ccaa,lat,lng
+1,Karting Madrid Jarama,Madrid,40.613741,-3.583248
+2,Karting Carlos Sainz Las Rozas,Madrid,40.500822,-3.894045
+3,Karting La Mina Ciempozuelos,Madrid,40.1597,-3.6186
+4,Fun-Kart Valdemoro,Madrid,40.193,-3.6764
+5,GT Racing Kart Tres Cantos,Madrid,40.5948,-3.705
+6,Karting Alcalá de Henares,Madrid,40.4817,-3.3635
+7,Karting Getafe,Madrid,40.3051,-3.7338
+8,Ocius Park Karting Colmenar Viejo,Madrid,40.6734,-3.6999
+9,Karting Circuit de Catalunya,Cataluña,41.57,2.261
+10,Indoor Karting Barcelona,Cataluña,41.395254,2.034411
+11,Karting Costa Daurada Vendrell,Cataluña,41.198681,1.528324
+12,Karting Calafat,Cataluña,40.9264,0.8374
+13,Karting Palamós Costa Brava,Cataluña,41.868932,3.136689
+14,Karting Empuriabrava,Cataluña,42.248,3.115
+15,Karting Mollet del Vallès,Cataluña,41.538,2.212
+16,Fast Circuit Valencia Cheste,Comunidad Valenciana,39.4836,-0.6411
+17,Karting Indoor Valencia,Comunidad Valenciana,39.56,-0.382
+18,Kartódromo Internacional Lucas Guerrero,Comunidad Valenciana,39.4763,-0.3764
+19,Karting Alicante,Comunidad Valenciana,38.37,-0.53
+20,Karting Torrevieja,Comunidad Valenciana,37.9781,-0.6863
+21,Karting Castellón,Comunidad Valenciana,39.985,0.024
+22,Karting Gandia,Comunidad Valenciana,38.968,-0.183
+23,Karting Benidorm,Comunidad Valenciana,38.534,-0.139
+24,Racing Dakart Jerez,Andalucía,36.686,-6.126
+25,Go Karting Marbella,Andalucía,36.51,-4.886
+26,Kart & Fun Mijas,Andalucía,36.515,-4.637
+27,Karting Indoor Málaga,Andalucía,36.714,-4.432
+28,Karting Almería,Andalucía,36.833,-2.453
+29,Karting Sevilla,Andalucía,37.559478,-5.931819
+30,Karting Fuengirola,Andalucía,36.539,-4.617
+31,TOP20 Karting Córdoba,Andalucía,37.888,-4.794
+32,Karting Granada,Andalucía,37.174728,-3.656541
+33,Karting Huelva,Andalucía,37.134,-6.833
+34,Karting Jaén,Andalucía,37.793,-3.752
+35,Karting Cádiz,Andalucía,36.511,-6.259
+36,Kart & Fun Estepona,Andalucía,36.4289,-5.1615
+37,Circuito Internacional de Zuera,Aragón,41.83014,-0.810034
+38,MotorLand Aragón Karting,Aragón,41.0809,-0.2032
+39,Karting Plaza Zaragoza,Aragón,41.6315,-0.9913
+40,Karting Elorrio,País Vasco,43.1247,-2.5397
+41,Karting Zuia Álava,País Vasco,42.935,-2.784
+42,OcioKart Güeñes Bizkaia,País Vasco,43.203874,-3.096371
+43,Karting Olaberria Gipuzkoa,País Vasco,43.031764,-2.214924
+44,Big Karting Vitoria-Gasteiz,País Vasco,42.9109,-2.7116
+45,Racing Dakart Sanxenxo,Galicia,42.405,-8.8067
+46,Karting Marineda A Coruña,Galicia,43.344115,-8.429894
+47,GoKart Porriño Vigo,Galicia,42.142181,-8.633872
+48,Karting Lugo,Galicia,43.01,-7.559
+49,Karting Santiago de Compostela,Galicia,42.792,-8.516
+50,Karting Oviedo - Circuito Fernando Alonso,Asturias,43.429196,-5.831372
+51,Kart Gijón,Asturias,43.427743,-5.757055
+52,Karting Avilés,Asturias,43.556,-5.921
+53,Karting La Roca Cantabria,Cantabria,43.3718,-4.0803
+54,Karting Los Molinos Noja,Cantabria,43.486072,-3.539662
+55,Karting San Pablo Valladolid,Castilla y León,41.60069,-4.69378
+56,Ibérica Karting Salamanca,Castilla y León,40.945762,-5.657346
+57,Karting Indoor Burgos,Castilla y León,42.283034,-3.717842
+58,Karting León,Castilla y León,42.51,-5.65
+59,Karting Segovia,Castilla y León,40.948,-4.118
+60,Karting Ávila,Castilla y León,40.656,-4.7
+61,Karting Zamora,Castilla y León,41.503,-5.745
+62,Karting Soria,Castilla y León,41.764,-2.464
+63,FastKart Albacete,Castilla-La Mancha,38.929622,-1.743779
+64,Karting Toledo,Castilla-La Mancha,39.8628,-4.0273
+65,Karting Ciudad Real,Castilla-La Mancha,38.9848,-3.9272
+66,Karting Cuenca,Castilla-La Mancha,40.07,-2.137
+67,Karting Cabanillas del Campo,Castilla-La Mancha,40.628977,-3.245644
+68,Karting Zuasti Navarra,Navarra,42.8356,-1.5968
+69,Karting Tudela,Navarra,42.0608,-1.6047
+70,Karting Refena Pamplona,Navarra,42.831835,-1.667048
+71,Karting Rioja Logroño,La Rioja,42.4855,-2.4872
+72,Karting Calahorra,La Rioja,42.302,-1.965
+73,Cartagena Karting Club,Murcia,37.640894,-0.985982
+74,Karting Lorca,Murcia,37.662,-1.7
+75,Karting Badajoz,Extremadura,38.88,-6.975
+76,Karting Mérida,Extremadura,38.914,-6.342
+77,Karting Cáceres,Extremadura,39.4753,-6.3723
+78,Karting Plasencia,Extremadura,40.031,-6.095
+79,Karting Son Pardo Mallorca,Baleares,39.59,2.64
+80,Karting Can Picafort Mallorca,Baleares,39.762,3.155
+81,Karting Mahón Menorca,Baleares,39.866716,4.25634
+82,Karting Ibiza,Baleares,38.9776,1.3162
+83,Karting Indoor Gran Canaria,Canarias,27.997482,-15.389046
+84,Racing Kart Maspalomas,Canarias,27.775814,-15.604412
+85,Gran Karting Club Bahía Feliz,Canarias,27.786122,-15.506117
+86,Karting Indoor Santa Cruz de Tenerife,Canarias,28.4523,-16.2699
+87,Karting Adeje Tenerife,Canarias,28.0515,-16.6503
+88,Gran Karting Club Lanzarote,Canarias,28.948078,-13.624052
+89,Karting Fuerteventura,Canarias,28.5006,-13.9013
+90,Karting Torremolinos,Andalucía,36.618,-4.499
+91,Karting Linares,Andalucía,38.093,-3.636
+92,Karting Elche,Comunidad Valenciana,38.267,-0.701
+93,Karting Dénia,Comunidad Valenciana,38.862,0.075
+94,Karting Huesca,Aragón,42.143,-0.418
+95,Karting Teruel,Aragón,40.348,-1.106
+96,Karting Campillos Málaga,Andalucía,36.942,-4.851
+97,Karting La Palma,Canarias,28.683,-17.764

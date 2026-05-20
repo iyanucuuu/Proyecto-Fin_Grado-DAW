@@ -1,0 +1,301 @@
+<app-header></app-header>
+
+<div class="amigos-page">
+
+  <!-- HEADER DE PÁGINA -->
+  <div class="page-header">
+    <h1 class="page-title"><i class="bi bi-people-fill"></i> PILOTOS</h1>
+    <div class="page-tabs">
+
+      <button class="page-tab" [class.active]="tabActiva === 'amigos'" (click)="cambiarTab('amigos')">
+        <i class="bi bi-heart-fill"></i> MIS AMIGOS
+        <span class="tab-count" *ngIf="amigosAceptados.length > 0">{{ amigosAceptados.length }}</span>
+      </button>
+
+      <button class="page-tab" [class.active]="tabActiva === 'recibidas'" (click)="cambiarTab('recibidas')">
+        <i class="bi bi-envelope-arrow-down-fill"></i> RECIBIDAS
+        <span class="tab-count tab-count-alert" *ngIf="solicitudesRecibidas.length > 0">{{ solicitudesRecibidas.length }}</span>
+      </button>
+
+      <button class="page-tab" [class.active]="tabActiva === 'enviadas'" (click)="cambiarTab('enviadas')">
+        <i class="bi bi-envelope-arrow-up-fill"></i> ENVIADAS
+        <span class="tab-count" *ngIf="solicitudesEnviadas.length > 0">{{ solicitudesEnviadas.length }}</span>
+      </button>
+
+      <button class="page-tab" [class.active]="tabActiva === 'conocer'" (click)="cambiarTab('conocer')">
+        <i class="bi bi-search"></i> CONOCER GENTE
+      </button>
+
+    </div>
+  </div>
+
+  <!-- ══ TAB: MIS AMIGOS ══ -->
+  <div class="tab-content" *ngIf="tabActiva === 'amigos'">
+    <div *ngIf="cargandoAmigos" class="estado-mensaje">
+      <div class="spinner"></div><p>Cargando amigos...</p>
+    </div>
+
+    <ng-container *ngIf="!cargandoAmigos">
+      <div class="estado-mensaje" *ngIf="amigosAceptados.length === 0">
+        <span class="estado-icono"><i class="bi bi-person-x" style="font-size:2rem;opacity:0.4;"></i></span>
+        <p>Aún no tienes amigos. ¡Ve a <strong>Conocer Gente</strong> y añade pilotos!</p>
+        <button class="btn-ir-conocer" (click)="cambiarTab('conocer')"><i class="bi bi-search"></i> CONOCER GENTE →</button>
+      </div>
+
+      <div class="pilotos-grid" *ngIf="amigosAceptados.length > 0">
+        <div class="piloto-card amigo-card-clickable" *ngFor="let a of amigosAceptados" (click)="abrirPerfilAmigo(a)">
+          <div class="piloto-avatar avatar-hover">
+            <img *ngIf="a.foto_perfil" [src]="a.foto_perfil" [alt]="a.username">
+            <span *ngIf="!a.foto_perfil">{{ a.initials }}</span>
+            <div class="avatar-hover-overlay"><i class="bi bi-eye-fill"></i></div>
+          </div>
+          <div class="piloto-info">
+            <h3 class="piloto-nombre">{{ a.username }}</h3>
+            <span class="piloto-ccaa" *ngIf="a.comunidad_autonoma"><i class="bi bi-geo-alt-fill"></i> {{ a.comunidad_autonoma }}</span>
+            <span class="piloto-clan-badge" *ngIf="a.id_escuderia"><i class="bi bi-shield-fill"></i> En escudería</span>
+            <span class="piloto-libre-badge" *ngIf="!a.id_escuderia"><i class="bi bi-person-fill"></i> Piloto libre</span>
+          </div>
+          <div class="piloto-acciones">
+            <button class="btn-amigo-ya" disabled><i class="bi bi-heart-fill"></i> Amigo</button>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+
+  <!-- ══ TAB: SOLICITUDES RECIBIDAS ══ -->
+  <div class="tab-content" *ngIf="tabActiva === 'recibidas'">
+    <div *ngIf="cargandoAmigos" class="estado-mensaje">
+      <div class="spinner"></div><p>Cargando...</p>
+    </div>
+
+    <ng-container *ngIf="!cargandoAmigos">
+      <div class="estado-mensaje" *ngIf="solicitudesRecibidas.length === 0">
+        <span class="estado-icono"><i class="bi bi-inbox" style="font-size:2rem;opacity:0.4;"></i></span>
+        <p>No tienes solicitudes pendientes de responder.</p>
+      </div>
+
+      <div class="solicitudes-header" *ngIf="solicitudesRecibidas.length > 0">
+        <p class="solicitudes-desc">
+          Tienes <strong>{{ solicitudesRecibidas.length }}</strong> solicitud{{ solicitudesRecibidas.length !== 1 ? 'es' : '' }} de amistad pendiente{{ solicitudesRecibidas.length !== 1 ? 's' : '' }}.
+        </p>
+      </div>
+
+      <div class="pilotos-grid" *ngIf="solicitudesRecibidas.length > 0">
+        <div class="piloto-card solicitud-card" *ngFor="let a of solicitudesRecibidas">
+          <div class="piloto-avatar">
+            <img *ngIf="a.foto_perfil" [src]="a.foto_perfil" [alt]="a.username">
+            <span *ngIf="!a.foto_perfil">{{ a.initials }}</span>
+          </div>
+          <div class="piloto-info">
+            <h3 class="piloto-nombre">{{ a.username }}</h3>
+            <span class="piloto-ccaa" *ngIf="a.comunidad_autonoma"><i class="bi bi-geo-alt-fill"></i> {{ a.comunidad_autonoma }}</span>
+            <span class="piloto-clan-badge" *ngIf="a.id_escuderia"><i class="bi bi-shield-fill"></i> En escudería</span>
+            <span class="piloto-libre-badge" *ngIf="!a.id_escuderia"><i class="bi bi-person-fill"></i> Piloto libre</span>
+          </div>
+          <div class="solicitud-acciones">
+            <button class="btn-aceptar" (click)="aceptarSolicitud(a)" [disabled]="a.aceptando">
+              <ng-container *ngIf="!a.aceptando"><i class="bi bi-check-circle-fill"></i> Aceptar</ng-container>
+              <ng-container *ngIf="a.aceptando">...</ng-container>
+            </button>
+            <button class="btn-rechazar" (click)="rechazarSolicitud(a)" [disabled]="a.rechazando">
+              <ng-container *ngIf="!a.rechazando"><i class="bi bi-x-circle-fill"></i> Rechazar</ng-container>
+              <ng-container *ngIf="a.rechazando">...</ng-container>
+            </button>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+
+  <!-- ══ TAB: SOLICITUDES ENVIADAS ══ -->
+  <div class="tab-content" *ngIf="tabActiva === 'enviadas'">
+    <div *ngIf="cargandoAmigos" class="estado-mensaje">
+      <div class="spinner"></div><p>Cargando...</p>
+    </div>
+
+    <ng-container *ngIf="!cargandoAmigos">
+      <div class="estado-mensaje" *ngIf="solicitudesEnviadas.length === 0">
+        <span class="estado-icono"><i class="bi bi-envelope-arrow-up" style="font-size:2rem;opacity:0.4;"></i></span>
+        <p>No tienes solicitudes enviadas pendientes de respuesta.</p>
+        <button class="btn-ir-conocer" (click)="cambiarTab('conocer')"><i class="bi bi-search"></i> Buscar pilotos →</button>
+      </div>
+
+      <div class="solicitudes-header" *ngIf="solicitudesEnviadas.length > 0">
+        <p class="solicitudes-desc">
+          <strong>{{ solicitudesEnviadas.length }}</strong> solicitud{{ solicitudesEnviadas.length !== 1 ? 'es' : '' }} esperando respuesta.
+        </p>
+      </div>
+
+      <div class="pilotos-grid" *ngIf="solicitudesEnviadas.length > 0">
+        <div class="piloto-card pendiente-card" *ngFor="let a of solicitudesEnviadas">
+          <div class="piloto-avatar">
+            <img *ngIf="a.foto_perfil" [src]="a.foto_perfil" [alt]="a.username">
+            <span *ngIf="!a.foto_perfil">{{ a.initials }}</span>
+          </div>
+          <div class="piloto-info">
+            <h3 class="piloto-nombre">{{ a.username }}</h3>
+            <span class="piloto-ccaa" *ngIf="a.comunidad_autonoma"><i class="bi bi-geo-alt-fill"></i> {{ a.comunidad_autonoma }}</span>
+            <span class="piloto-clan-badge" *ngIf="a.id_escuderia"><i class="bi bi-shield-fill"></i> En escudería</span>
+          </div>
+          <div class="piloto-acciones">
+            <span class="badge-pendiente"><i class="bi bi-hourglass-split"></i> Pendiente</span>
+            <button class="btn-cancelar-sol" (click)="cancelarSolicitud(a)" [disabled]="a.rechazando">
+              {{ a.rechazando ? '...' : 'Cancelar' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+
+  <!-- ══ TAB: CONOCER GENTE ══ -->
+  <div class="tab-content" *ngIf="tabActiva === 'conocer'">
+    <div class="conocer-layout">
+
+      <!-- PANEL FILTROS -->
+      <aside class="filtros-panel">
+        <h2 class="filtros-titulo"><i class="bi bi-funnel-fill"></i> FILTROS</h2>
+
+        <div class="filtro-grupo">
+          <label>NOMBRE</label>
+          <input type="text" [(ngModel)]="busqueda" (input)="aplicarFiltros()"
+                 placeholder="Buscar piloto..." class="filtro-input">
+        </div>
+
+        <div class="filtro-grupo">
+          <label>COMUNIDAD</label>
+          <select [(ngModel)]="filtroCCAA" (change)="aplicarFiltros()" class="filtro-select">
+            <option value="">Toda España</option>
+            <option *ngFor="let c of comunidades" [value]="c">{{ c }}</option>
+          </select>
+        </div>
+
+        <div class="filtro-grupo">
+          <label>ESCUDERÍA</label>
+          <div class="radio-group">
+            <label class="radio-item">
+              <input type="radio" name="clan" [(ngModel)]="filtroTieneClan" value="" (change)="aplicarFiltros()">
+              <span>Todos</span>
+            </label>
+            <label class="radio-item">
+              <input type="radio" name="clan" [(ngModel)]="filtroTieneClan" value="si" (change)="aplicarFiltros()">
+              <span>Con escudería</span>
+            </label>
+            <label class="radio-item">
+              <input type="radio" name="clan" [(ngModel)]="filtroTieneClan" value="no" (change)="aplicarFiltros()">
+              <span>Sin escudería</span>
+            </label>
+          </div>
+        </div>
+
+        <button class="btn-reset" (click)="resetFiltros()"><i class="bi bi-arrow-counterclockwise"></i> REINICIAR</button>
+
+        <div class="contador-resultados">
+          <span class="contador-num">{{ filtrados.length }}</span>
+          <span>piloto{{ filtrados.length !== 1 ? 's' : '' }}</span>
+        </div>
+      </aside>
+
+      <!-- LISTADO + PAGINACIÓN -->
+      <main class="resultados-panel">
+        <div class="estado-mensaje" *ngIf="cargandoUsuarios">
+          <div class="spinner"></div><p>Cargando pilotos...</p>
+        </div>
+
+        <ng-container *ngIf="!cargandoUsuarios">
+          <div class="estado-mensaje" *ngIf="filtrados.length === 0">
+            <span class="estado-icono"><i class="bi bi-flag" style="font-size:2rem;opacity:0.4;"></i></span>
+            <p>Sin resultados. Prueba otros filtros.</p>
+            <button class="btn-reset" (click)="resetFiltros()">Ver todos</button>
+          </div>
+
+          <div class="pilotos-grid" *ngIf="filtrados.length > 0">
+            <div class="piloto-card" *ngFor="let u of paginados">
+              <div class="piloto-avatar">
+                <img *ngIf="u.foto_perfil" [src]="u.foto_perfil" [alt]="u.username">
+                <span *ngIf="!u.foto_perfil">{{ u.initials }}</span>
+              </div>
+              <div class="piloto-info">
+                <h3 class="piloto-nombre">{{ u.username }}</h3>
+                <span class="piloto-ccaa" *ngIf="u.comunidad_autonoma"><i class="bi bi-geo-alt-fill"></i> {{ u.comunidad_autonoma }}</span>
+                <span class="piloto-clan-badge" *ngIf="u.id_escuderia"><i class="bi bi-shield-fill"></i> En escudería</span>
+                <span class="piloto-libre-badge" *ngIf="!u.id_escuderia"><i class="bi bi-person-fill"></i> Piloto libre</span>
+              </div>
+              <div class="piloto-acciones">
+                <!-- Ya son amigos -->
+                <button class="btn-amigo-ya" disabled *ngIf="u.esAmigo"><i class="bi bi-heart-fill"></i> Amigo</button>
+                <!-- Tú le enviaste una solicitud -->
+                <button class="btn-amigo-ya enviada" disabled *ngIf="!u.esAmigo && u.yaEnviado"><i class="bi bi-check-circle-fill"></i> Enviada</button>
+                <!-- Él te envió una solicitud a ti -->
+                <button class="btn-recibida" disabled *ngIf="!u.esAmigo && !u.yaEnviado && u.yaRecibido"><i class="bi bi-envelope-arrow-down-fill"></i> Te agregó</button>
+                <!-- Sin relación aún -->
+                <button class="btn-agregar" (click)="enviarSolicitud(u)"
+                        [disabled]="u.enviandoSolicitud"
+                        *ngIf="!u.esAmigo && !u.yaEnviado && !u.yaRecibido">
+                  <ng-container *ngIf="!u.enviandoSolicitud"><i class="bi bi-person-plus-fill"></i> AÑADIR</ng-container>
+                  <ng-container *ngIf="u.enviandoSolicitud">...</ng-container>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="paginacion" *ngIf="totalPaginas > 1">
+            <button class="pag-btn pag-arrow" (click)="irPagina(1)" [disabled]="paginaActual === 1">«</button>
+            <button class="pag-btn pag-arrow" (click)="irPagina(paginaActual - 1)" [disabled]="paginaActual === 1">‹</button>
+            <button class="pag-btn" *ngIf="paginaActual > 3" (click)="irPagina(1)">1</button>
+            <span class="pag-ellipsis" *ngIf="paginaActual > 4">…</span>
+            <button class="pag-btn" *ngFor="let p of paginas" [class.activa]="p === paginaActual" (click)="irPagina(p)">{{ p }}</button>
+            <span class="pag-ellipsis" *ngIf="paginaActual < totalPaginas - 3">…</span>
+            <button class="pag-btn" *ngIf="paginaActual < totalPaginas - 2" (click)="irPagina(totalPaginas)">{{ totalPaginas }}</button>
+            <button class="pag-btn pag-arrow" (click)="irPagina(paginaActual + 1)" [disabled]="paginaActual === totalPaginas">›</button>
+            <button class="pag-btn pag-arrow" (click)="irPagina(totalPaginas)" [disabled]="paginaActual === totalPaginas">»</button>
+            <span class="pag-info">{{ paginaActual }} / {{ totalPaginas }}</span>
+          </div>
+        </ng-container>
+      </main>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ POPUP PERFIL AMIGO ═══════════════════════════════════════════════════════ -->
+<div class="amigo-popup-overlay" *ngIf="amigoSeleccionado" (click)="cerrarPerfilAmigo()">
+  <div class="amigo-popup" (click)="$event.stopPropagation()">
+    <button class="amigo-popup-close" (click)="cerrarPerfilAmigo()">✕</button>
+
+    <!-- Avatar grande -->
+    <div class="amigo-popup-avatar">
+      <img *ngIf="amigoSeleccionado.foto_perfil" [src]="amigoSeleccionado.foto_perfil" [alt]="amigoSeleccionado.username">
+      <span *ngIf="!amigoSeleccionado.foto_perfil">{{ amigoSeleccionado.initials }}</span>
+    </div>
+
+    <h2 class="amigo-popup-nombre">{{ amigoSeleccionado.username }}</h2>
+
+    <div class="amigo-popup-info">
+      <div class="amigo-popup-field" *ngIf="amigoSeleccionado.comunidad_autonoma">
+        <span class="amigo-popup-label"><i class="bi bi-geo-alt-fill"></i> Comunidad</span>
+        <span class="amigo-popup-val">{{ amigoSeleccionado.comunidad_autonoma }}</span>
+      </div>
+      <div class="amigo-popup-field">
+        <span class="amigo-popup-label"><i class="bi bi-shield-fill"></i> Escudería</span>
+        <span class="amigo-popup-val">{{ amigoSeleccionado.id_escuderia ? 'En escudería' : 'Piloto libre' }}</span>
+      </div>
+      <div class="amigo-popup-field">
+        <span class="amigo-popup-label"><i class="bi bi-heart-fill"></i> Relación</span>
+        <span class="amigo-popup-val">Amigo</span>
+      </div>
+    </div>
+
+    <button class="amigo-popup-msg-btn" (click)="irAMensajeDirecto(amigoSeleccionado)">
+      <i class="bi bi-chat-dots-fill"></i> Enviar mensaje
+    </button>
+  </div>
+</div>
+
+<app-footer></app-footer>
+
+<!-- TOASTS -->
+<div class="toast-container">
+  <div *ngFor="let t of toasts" class="toast" [class.error]="t.tipo === 'error'">{{ t.msg }}</div>
+</div>

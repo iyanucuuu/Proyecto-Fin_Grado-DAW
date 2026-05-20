@@ -1,0 +1,408 @@
+@import 'bootstrap/dist/css/bootstrap.min.css';
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   VARIABLES DE TEMA
+   ══════════════════════════════════════════════════════════════════════════════ */
+:root {
+  --bg:            #0f1018;
+  --bg-card:       rgba(255, 255, 255, 0.05);
+  --bg-input:      rgba(255, 255, 255, 0.07);
+  --border:        rgba(255, 255, 255, 0.09);
+  --border-accent: rgba(220, 0, 10, 0.4);
+  --text:          #eeeae6;
+  --text-muted:    rgba(238, 234, 230, 0.44);
+  --accent:        #cc000b;
+  --accent-hover:  #a80008;
+  /* light mode util colors exposed as vars for components */
+  --card-bg-light:   rgba(255,255,255,0.95);
+  --card-border-light: rgba(0,0,0,0.08);
+}
+
+[data-theme="light"] {
+  --bg:            #eef0f5;
+  --bg-card:       rgba(255, 255, 255, 0.95);
+  --bg-input:      #ffffff;
+  --border:        rgba(0, 0, 0, 0.08);
+  --border-accent: rgba(200, 0, 10, 0.28);
+  --text:          #18100f;
+  --text-muted:    rgba(24, 16, 15, 0.48);
+  --accent:        #c8000a;
+  --accent-hover:  #a00008;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   RESET
+   ══════════════════════════════════════════════════════════════════════════════ */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Mapbox fix */
+canvas,
+.mapboxgl-canvas,
+.mapboxgl-canvas-container,
+.mapboxgl-map {
+  box-sizing: content-box !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   FONDO GLOBAL
+   ══════════════════════════════════════════════════════════════════════════════ */
+html, body { min-height: 100%; }
+
+body {
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+  transition: background-color 0.3s, color 0.3s;
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(ellipse 75% 42% at 50% 0%,   rgba(160, 0, 8, 0.32) 0%, transparent 62%),
+    radial-gradient(ellipse 50% 50% at 100% 100%, rgba(6, 4, 22, 0.5)   0%, transparent 55%),
+    radial-gradient(ellipse 50% 50% at 0%   100%, rgba(6, 4, 22, 0.5)   0%, transparent 55%),
+    repeating-linear-gradient(
+      -55deg,
+      transparent             0px,
+      transparent             60px,
+      rgba(255,255,255,0.014) 60px,
+      rgba(255,255,255,0.014) 61px
+    );
+}
+
+[data-theme="light"] body {
+  background-color: #eef0f5;
+  background-image:
+    radial-gradient(ellipse 70% 38% at 50% 0%, rgba(200,0,10,0.05) 0%, transparent 58%),
+    repeating-linear-gradient(
+      -55deg,
+      transparent       0px,
+      transparent       60px,
+      rgba(0,0,0,0.012) 60px,
+      rgba(0,0,0,0.012) 61px
+    );
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   MODO CLARO — OVERRIDES GLOBALES
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── Tarjetas genéricas ── */
+[data-theme="light"] .section-card {
+  background: #ffffff !important;
+  border-color: rgba(0,0,0,0.09) !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important;
+}
+
+[data-theme="light"] .section-card *:not(.section-title):not(.badge-comunidad):not(img):not(.btn-clan-racing):not(.btn-clan-secondary):not(.btn-logout-racing):not(.btn-editar-perfil):not(.logro-icon):not([class*="btn"]) {
+  color: #18100f;
+}
+
+/* ── Títulos con degradado (blanco→rojo invisible en fondo claro) ── */
+[data-theme="light"] .section-title {
+  background: linear-gradient(90deg, #18100f 0%, #8b0000 60%, #c8000a 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  filter: none !important;
+}
+[data-theme="light"] .page-title {
+  background: linear-gradient(90deg, #18100f 0%, #8b0000 60%, #c8000a 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  filter: none !important;
+}
+[data-theme="light"] .filtros-titulo {
+  background: linear-gradient(90deg, #18100f 0%, #8b0000 60%, #c8000a 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  filter: none !important;
+}
+[data-theme="light"] .clanes-titulo {
+  background: linear-gradient(90deg, #18100f 0%, #8b0000 60%, #c8000a 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  filter: none !important;
+}
+
+/* ── Textos blancos invisibles en fondos claros ── */
+[data-theme="light"] .small-muted {
+  color: rgba(24,16,15,0.5) !important;
+}
+[data-theme="light"] .list-item { color: #18100f !important; }
+[data-theme="light"] .escuderia-name { color: #18100f !important; }
+
+/* Botones con texto blanco sobre fondo transparente */
+[data-theme="light"] .btn-clan-secondary {
+  color: #18100f !important;
+  border-color: rgba(24,16,15,0.25) !important;
+}
+[data-theme="light"] .btn-clan-secondary:hover {
+  border-color: #c8000a !important;
+  color: #c8000a !important;
+}
+[data-theme="light"] .btn-logout-racing {
+  color: #c8000a !important;
+  border-color: #c8000a !important;
+}
+[data-theme="light"] .btn-logout-racing:hover {
+  background: #c8000a !important;
+  color: #fff !important;
+}
+
+/* ── Sidebar cuenta (se mantiene oscuro) ── */
+[data-theme="light"] .sidebar-card {
+  background: #1e1e2a !important;
+  border-color: rgba(225,6,0,0.4) !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.25) !important;
+}
+[data-theme="light"] .sidebar-card *:not(img):not(.badge-comunidad) {
+  color: #eeeae6 !important;
+}
+[data-theme="light"] .sidebar-card .small-muted,
+[data-theme="light"] .sidebar-card .fecha-creacion {
+  color: rgba(238,234,230,0.5) !important;
+}
+
+/* ── Select options (dark mode global) ── */
+select option {
+  background-color: #1a1b28;
+  color: #eeeae6;
+}
+
+/* ── Inputs y selects ── */
+[data-theme="light"] input:not([type="radio"]):not([type="checkbox"]),
+[data-theme="light"] select,
+[data-theme="light"] textarea {
+  background: #ffffff !important;
+  border-color: rgba(0,0,0,0.15) !important;
+  color: #18100f !important;
+}
+[data-theme="light"] input::placeholder,
+[data-theme="light"] textarea::placeholder {
+  color: rgba(24,16,15,0.35) !important;
+}
+[data-theme="light"] select option {
+  background-color: #ffffff !important;
+  color: #18100f !important;
+}
+
+/* ── Pilotos/amigos cards ── */
+[data-theme="light"] .piloto-card {
+  background: #ffffff !important;
+  border-color: rgba(0,0,0,0.08) !important;
+}
+[data-theme="light"] .piloto-card:hover {
+  border-color: rgba(200,0,10,0.25) !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1) !important;
+}
+[data-theme="light"] .piloto-nombre  { color: #18100f !important; }
+[data-theme="light"] .piloto-ccaa    { color: rgba(24,16,15,0.5) !important; }
+[data-theme="light"] .amigo-nombre   { color: rgba(24,16,15,0.85) !important; }
+
+/* ── Panel filtros amigos ── */
+[data-theme="light"] .filtros-panel {
+  background: #ffffff !important;
+  border-color: rgba(0,0,0,0.09) !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07) !important;
+}
+[data-theme="light"] .filtros-titulo,
+[data-theme="light"] .filtro-grupo > label:first-child {
+  color: rgba(24,16,15,0.45) !important;
+}
+[data-theme="light"] .radio-item { color: rgba(24,16,15,0.75) !important; }
+[data-theme="light"] .contador-resultados { color: rgba(24,16,15,0.45) !important; border-color: rgba(0,0,0,0.07) !important; }
+
+/* ── Barra de filtros de pistas ── */
+[data-theme="light"] .filtros-bar {
+  background: rgba(238,240,245,0.96) !important;
+  border-bottom-color: rgba(0,0,0,0.07) !important;
+}
+[data-theme="light"] .filtros-bar select,
+[data-theme="light"] .filtros-bar input {
+  background: #fff !important;
+  border-color: rgba(0,0,0,0.13) !important;
+  color: #18100f !important;
+}
+[data-theme="light"] .filtros-bar select option { background: #fff !important; color: #18100f !important; }
+[data-theme="light"] .contador-pistas { color: rgba(24,16,15,0.5) !important; }
+
+/* ── Filas de pistas ── */
+[data-theme="light"] .pista-row {
+  background: #ffffff !important;
+  border-color: rgba(0,0,0,0.08) !important;
+}
+[data-theme="light"] .pista-row:hover {
+  background: #fff !important;
+  border-color: rgba(200,0,10,0.22) !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.09) !important;
+}
+[data-theme="light"] .pista-nombre { color: #18100f !important; }
+[data-theme="light"] .meta-chip    { color: rgba(24,16,15,0.5) !important; }
+[data-theme="light"] .stars-meta   { color: rgba(24,16,15,0.4) !important; }
+
+[data-theme="light"] .btn-web {
+  background: rgba(0,0,0,0.05) !important;
+  border-color: rgba(0,0,0,0.12) !important;
+  color: #18100f !important;
+}
+[data-theme="light"] .btn-info {
+  background: rgba(0,0,0,0.04) !important;
+  border-color: rgba(0,0,0,0.09) !important;
+  color: rgba(24,16,15,0.55) !important;
+}
+[data-theme="light"] .btn-social {
+  background: rgba(90,90,255,0.07) !important;
+  border-color: rgba(90,90,255,0.2) !important;
+  color: #5050cc !important;
+}
+
+/* ── Modales pistas ── */
+[data-theme="light"] .modal-box {
+  background: #ffffff !important;
+  border-color: rgba(200,0,10,0.2) !important;
+  box-shadow: 0 12px 48px rgba(0,0,0,0.2) !important;
+}
+[data-theme="light"] .minfo-nombre,
+[data-theme="light"] .minfo-val { color: #18100f !important; }
+[data-theme="light"] .minfo-label { color: rgba(24,16,15,0.45) !important; }
+[data-theme="light"] .minfo-foto-ph {
+  background: linear-gradient(135deg, #f5e8e8, #f0d0d0) !important;
+}
+[data-theme="light"] .minfo-foto-iniciales { color: rgba(200,0,10,0.2) !important; }
+[data-theme="light"] .mcar-titulo { color: #18100f !important; }
+[data-theme="light"] .mcar-sub    { color: rgba(24,16,15,0.5) !important; }
+[data-theme="light"] .mcar-item {
+  background: rgba(0,0,0,0.03) !important;
+  border-color: rgba(0,0,0,0.07) !important;
+}
+[data-theme="light"] .mcar-item-titulo { color: #18100f !important; }
+[data-theme="light"] .mcar-item-desc,
+[data-theme="light"] .mcar-item-creador { color: rgba(24,16,15,0.5) !important; }
+
+/* ── Página de amigos ── */
+[data-theme="light"] .amigos-page { color: #18100f !important; }
+[data-theme="light"] .page-tab { color: rgba(24,16,15,0.4) !important; }
+[data-theme="light"] .page-tab.active { color: #18100f !important; }
+[data-theme="light"] .page-tab:hover:not(.active) { color: rgba(24,16,15,0.75) !important; }
+[data-theme="light"] .page-tabs { border-bottom-color: rgba(200,0,10,0.18) !important; }
+[data-theme="light"] .solicitudes-desc { color: rgba(24,16,15,0.6) !important; }
+[data-theme="light"] .solicitudes-desc strong { color: #18100f !important; }
+[data-theme="light"] .estado-mensaje { color: rgba(24,16,15,0.45) !important; }
+[data-theme="light"] .filtro-input,
+[data-theme="light"] .filtro-select {
+  background: #fff !important;
+  border-color: rgba(0,0,0,0.14) !important;
+  color: #18100f !important;
+}
+[data-theme="light"] .filtro-input::placeholder { color: rgba(24,16,15,0.3) !important; }
+[data-theme="light"] .filtro-select option { background: #fff !important; color: #18100f !important; }
+[data-theme="light"] .pag-btn {
+  background: #fff !important;
+  border-color: rgba(0,0,0,0.1) !important;
+  color: rgba(24,16,15,0.7) !important;
+}
+[data-theme="light"] .pag-btn.activa { background: #c8000a !important; color: #fff !important; border-color: #c8000a !important; }
+[data-theme="light"] .piloto-libre-badge {
+  background: rgba(0,0,0,0.05) !important;
+  border-color: rgba(0,0,0,0.1) !important;
+  color: rgba(24,16,15,0.45) !important;
+}
+
+/* ── Página Social ── */
+[data-theme="light"] .social-hero {
+  background: linear-gradient(180deg, rgba(200,0,10,0.06) 0%, transparent 100%) !important;
+  border-bottom-color: rgba(200,0,10,0.12) !important;
+}
+[data-theme="light"] .hero-nombre { filter: none !important; }
+[data-theme="light"] .hero-meta span { color: rgba(24,16,15,0.5) !important; }
+[data-theme="light"] .hero-back { color: rgba(24,16,15,0.4) !important; }
+[data-theme="light"] .stab { color: rgba(24,16,15,0.4) !important; }
+[data-theme="light"] .stab.active { color: #18100f !important; }
+[data-theme="light"] .social-tabs { border-bottom-color: rgba(200,0,10,0.15) !important; }
+[data-theme="light"] .chat-mensajes { }
+[data-theme="light"] .burbuja-texto {
+  background: rgba(0,0,0,0.05) !important;
+  border-color: rgba(0,0,0,0.07) !important;
+  color: #18100f !important;
+}
+[data-theme="light"] .mio .burbuja-texto {
+  background: rgba(200,0,10,0.08) !important;
+  border-color: rgba(200,0,10,0.15) !important;
+  color: #18100f !important;
+}
+[data-theme="light"] .burbuja-hora,
+[data-theme="light"] .burbuja-hora-mia { color: rgba(24,16,15,0.3) !important; }
+[data-theme="light"] .chat-input-area { border-top-color: rgba(0,0,0,0.08) !important; }
+[data-theme="light"] .chat-input {
+  background: #ffffff !important;
+  border-color: rgba(0,0,0,0.14) !important;
+  color: #18100f !important;
+}
+[data-theme="light"] .chat-input::placeholder { color: rgba(24,16,15,0.3) !important; }
+[data-theme="light"] .carreras-sub { color: rgba(24,16,15,0.5) !important; }
+[data-theme="light"] .carrera-card {
+  background: #ffffff !important;
+  border-color: rgba(0,0,0,0.08) !important;
+}
+[data-theme="light"] .carrera-titulo { color: #18100f !important; }
+[data-theme="light"] .carrera-desc,
+[data-theme="light"] .carrera-creador { color: rgba(24,16,15,0.5) !important; }
+[data-theme="light"] .social-body .modal-box {
+  background: #ffffff !important;
+}
+
+/* ── Chat en mi-escuderia (burbujas) ── */
+[data-theme="light"] .msg-bubble {
+  background: rgba(0,0,0,0.05) !important;
+  border-color: rgba(0,0,0,0.08) !important;
+  color: #18100f !important;
+}
+[data-theme="light"] .mensaje-mio .msg-bubble {
+  background: rgba(200,0,10,0.07) !important;
+  border-color: rgba(200,0,10,0.15) !important;
+  color: #18100f !important;
+}
+
+/* ── Footer — siempre oscuro ── */
+[data-theme="light"] footer {
+  background: rgba(10,8,16,0.98) !important;
+}
+[data-theme="light"] footer *:not(.brand-4):not(a) {
+  color: rgba(238,234,230,0.55) !important;
+}
+[data-theme="light"] footer .brand-name,
+[data-theme="light"] footer h4 { color: #eeeae6 !important; }
+[data-theme="light"] footer .brand-4 { color: #e10600 !important; }
+[data-theme="light"] footer a { color: rgba(238,234,230,0.5) !important; }
+[data-theme="light"] footer a:hover { color: #eeeae6 !important; }
+
+/* ── Ranking ── */
+[data-theme="light"] .ranking-table thead th { color: rgba(24,16,15,0.5) !important; }
+[data-theme="light"] .ranking-row { background: #fff !important; border-color: rgba(0,0,0,0.07) !important; }
+[data-theme="light"] .ranking-row:hover { background: #fafafa !important; }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   BOTÓN GLOBAL
+   ══════════════════════════════════════════════════════════════════════════════ */
+.cta-button {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  font-weight: 700;
+  border-radius: 5px;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: background 0.25s, transform 0.2s;
+}
+.cta-button:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}

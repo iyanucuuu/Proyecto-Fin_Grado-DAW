@@ -1,0 +1,149 @@
+<div class="auth-container">
+
+  <!-- ── PANTALLA: EMAIL ENVIADO ─────────────────────────────────────────── -->
+  <div *ngIf="esperandoConfirmacion" class="confirm-card">
+    <div class="confirm-icon"><i class="bi bi-envelope-fill"></i></div>
+    <h3>¡Revisa tu bandeja de entrada!</h3>
+    <p>
+      Te hemos enviado un correo de confirmación a <strong>{{ regEmail }}</strong>.<br>
+      Haz clic en el enlace del email para activar tu cuenta y poder entrar.
+    </p>
+    <p class="confirm-note">¿No lo encuentras? Revisa la carpeta de spam.</p>
+    <button class="btn btn-danger w-100 mt-3" (click)="esperandoConfirmacion = false; esLogin = true">
+      Volver al inicio de sesión
+    </button>
+  </div>
+
+  <!-- ── FORMULARIO LOGIN ────────────────────────────────────────────────── -->
+  <div *ngIf="!esperandoConfirmacion && esLogin" class="login-card">
+    <h3 class="text-center mb-4">Iniciar Sesión</h3>
+
+    <div *ngIf="errorMsg" class="error-alert"><i class="bi bi-exclamation-triangle-fill"></i> {{ errorMsg }}</div>
+
+    <form (ngSubmit)="handleLogin()">
+      <div class="mb-3">
+        <label class="form-label">Correo electrónico</label>
+        <input type="email" name="loginEmail" [(ngModel)]="loginEmail"
+               class="form-control" placeholder="tu@correo.com" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Contraseña</label>
+        <div class="pass-wrapper">
+          <input [type]="mostrarLoginPass ? 'text' : 'password'"
+                 name="loginPassword" [(ngModel)]="loginPassword"
+                 class="form-control" placeholder="Contraseña" required>
+          <button type="button" class="pass-toggle" (click)="mostrarLoginPass = !mostrarLoginPass"
+                  [title]="mostrarLoginPass ? 'Ocultar' : 'Ver'">
+            <i [class]="mostrarLoginPass ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-danger w-100" [disabled]="cargando">
+        <span *ngIf="cargando" class="spinner"></span>
+        {{ cargando ? 'Entrando…' : 'ENTRAR' }}
+      </button>
+
+      <p class="text-center mt-3">
+        ¿No tienes cuenta? <a (click)="toggleForm()" class="toggle-link">Regístrate</a>
+      </p>
+    </form>
+  </div>
+
+  <!-- ── FORMULARIO REGISTRO ────────────────────────────────────────────── -->
+  <div *ngIf="!esperandoConfirmacion && !esLogin" class="card-reg">
+    <h3 class="text-center mb-3">Crear cuenta</h3>
+
+    <div *ngIf="errorMsg" class="error-alert"><i class="bi bi-exclamation-triangle-fill"></i> {{ errorMsg }}</div>
+
+    <form (ngSubmit)="handleRegister()">
+      <div class="row g-2 mb-3">
+        <div class="col-md-6">
+          <label class="form-label">Nombre / Piloto</label>
+          <input type="text" name="regNombre" [(ngModel)]="regNombre"
+                 class="form-control" placeholder="Tu nombre" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Comunidad</label>
+          <select name="regComunidad" [(ngModel)]="regComunidad" class="form-control" required>
+            <option value="" disabled selected>Selecciona...</option>
+            <option value="Andalucía">Andalucía</option>
+            <option value="Aragón">Aragón</option>
+            <option value="Principado de Asturias">Principado de Asturias</option>
+            <option value="Illes Balears">Illes Balears</option>
+            <option value="Canarias">Canarias</option>
+            <option value="Cantabria">Cantabria</option>
+            <option value="Castilla y León">Castilla y León</option>
+            <option value="Castilla-La Mancha">Castilla-La Mancha</option>
+            <option value="Cataluña">Cataluña</option>
+            <option value="Comunitat Valenciana">Comunitat Valenciana</option>
+            <option value="Extremadura">Extremadura</option>
+            <option value="Galicia">Galicia</option>
+            <option value="Comunidad de Madrid">Comunidad de Madrid</option>
+            <option value="Región de Murcia">Región de Murcia</option>
+            <option value="Comunidad Foral de Navarra">Comunidad Foral de Navarra</option>
+            <option value="País Vasco">País Vasco</option>
+            <option value="La Rioja">La Rioja</option>
+            <option value="Ceuta">Ceuta</option>
+            <option value="Melilla">Melilla</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input type="email" name="regEmail" [(ngModel)]="regEmail"
+               class="form-control" placeholder="tu@correo.com" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Contraseña</label>
+        <div class="pass-wrapper">
+          <input [type]="mostrarRegPass ? 'text' : 'password'"
+                 name="regPassword" [(ngModel)]="regPassword"
+                 class="form-control" minlength="6" required>
+          <button type="button" class="pass-toggle" (click)="mostrarRegPass = !mostrarRegPass"
+                  [title]="mostrarRegPass ? 'Ocultar' : 'Ver'">
+            <i [class]="mostrarRegPass ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+          </button>
+        </div>
+        <div *ngIf="regPassword.length > 0" class="strength-bar mt-1">
+          <div class="strength-fill" [class]="passwordStrength"></div>
+          <span class="strength-label">
+            {{ passwordStrength === 'weak' ? 'Débil' : passwordStrength === 'medium' ? 'Media' : 'Fuerte' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Confirmar contraseña</label>
+        <div class="pass-wrapper">
+          <input [type]="mostrarRegPass2 ? 'text' : 'password'"
+                 name="regPassword2" [(ngModel)]="regPassword2"
+                 class="form-control"
+                 [class.is-invalid]="regPassword2.length > 0 && regPassword !== regPassword2"
+                 [class.is-valid]="regPassword2.length > 0 && regPassword === regPassword2"
+                 required>
+          <button type="button" class="pass-toggle" (click)="mostrarRegPass2 = !mostrarRegPass2"
+                  [title]="mostrarRegPass2 ? 'Ocultar' : 'Ver'">
+            <i [class]="mostrarRegPass2 ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+          </button>
+        </div>
+        <div *ngIf="regPassword2.length > 0 && regPassword !== regPassword2" class="invalid-feedback d-block">
+          Las contraseñas no coinciden
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-danger btn-lg w-100" [disabled]="cargando">
+        <span *ngIf="cargando" class="spinner"></span>
+        {{ cargando ? 'Creando cuenta…' : 'CREAR CUENTA' }}
+      </button>
+
+      <p class="text-center mt-3">
+        ¿Ya tienes cuenta? <a (click)="toggleForm()" class="toggle-link">Inicia sesión</a>
+      </p>
+    </form>
+  </div>
+
+</div>

@@ -1,0 +1,280 @@
+<app-header></app-header>
+
+<main class="social-page" *ngIf="!cargando">
+
+  <!-- ── HERO DE PISTA ── -->
+  <div class="social-hero">
+    <div class="hero-avatar">
+      <img *ngIf="pista?.foto" [src]="pista!.foto" [alt]="pista!.nombre">
+      <span *ngIf="!pista?.foto">{{ pista?.nombre?.slice(0,2)?.toUpperCase() }}</span>
+    </div>
+    <div class="hero-info">
+      <a routerLink="/pistas" class="hero-back">← Volver a pistas</a>
+      <h1 class="hero-nombre">{{ pista?.nombre ?? 'Circuito' }}</h1>
+      <div class="hero-meta">
+        <span *ngIf="pista?.ccaa"><i class="bi bi-geo-alt-fill"></i> {{ pista!.ccaa }}</span>
+        <span *ngIf="pista?.tipo_kart"><i class="bi bi-speedometer2"></i> {{ pista!.tipo_kart }}</span>
+        <span *ngIf="pista?.entorno"><i class="bi bi-house-door-fill"></i> {{ pista!.entorno }}</span>
+      </div>
+    </div>
+    <a *ngIf="pista?.url" [href]="pista!.url" target="_blank" rel="noopener" class="hero-web-btn"><i class="bi bi-globe2"></i> Web oficial</a>
+  </div>
+
+  <!-- ── TABS ── -->
+  <div class="social-tabs">
+    <button class="stab" [class.active]="tabActiva === 'chat'" (click)="tabActiva = 'chat'">
+      <i class="bi bi-chat-dots-fill"></i> CHAT
+    </button>
+    <button class="stab" [class.active]="tabActiva === 'carreras'" (click)="tabActiva = 'carreras'">
+      <i class="bi bi-flag-fill"></i> CARRERAS
+      <span class="stab-count" *ngIf="carreras.length > 0">{{ carreras.length }}</span>
+    </button>
+    <button class="stab" [class.active]="tabActiva === 'resenas'" (click)="tabActiva = 'resenas'">
+      <i class="bi bi-star-fill"></i> RESEÑAS
+      <span class="stab-count" *ngIf="resenas.length > 0">{{ resenas.length }}</span>
+    </button>
+  </div>
+
+  <!-- ══ TAB: CHAT ══ -->
+  <div class="social-body" *ngIf="tabActiva === 'chat'">
+
+    <!-- MENSAJES -->
+    <div class="chat-mensajes" #chatContainer>
+      <div *ngIf="mensajes.length === 0" class="chat-vacio">
+        <i class="bi bi-chat-dots" style="font-size:2rem;opacity:0.3;"></i>
+        <p>Sé el primero en escribir algo sobre este circuito.</p>
+      </div>
+
+      <div *ngFor="let m of mensajes"
+           class="chat-burbuja"
+           [class.mio]="m.esMio"
+           [class.otro]="!m.esMio">
+
+        <!-- Avatar (solo mensajes ajenos) -->
+        <div class="burbuja-avatar" *ngIf="!m.esMio">
+          <span>{{ m.initials }}</span>
+        </div>
+
+        <div class="burbuja-body">
+          <!-- Nombre visible en todos los mensajes -->
+          <div class="burbuja-meta">
+            <span class="burbuja-nombre">{{ m.username }}</span>
+            <span class="burbuja-hora">{{ esHoy(m.created_at) ? formatHora(m.created_at) : formatFecha(m.created_at) }}</span>
+          </div>
+          <div class="burbuja-texto">{{ m.mensaje }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INPUT -->
+    <div class="chat-input-area">
+      <div *ngIf="!idUsuario" class="chat-login-aviso">
+        Inicia sesión para participar en el chat.
+      </div>
+      <div class="chat-input-wrap" *ngIf="idUsuario">
+        <textarea
+          class="chat-input"
+          [(ngModel)]="nuevoMensaje"
+          (keydown)="onEnter($event)"
+          placeholder="Escribe un mensaje... (Enter para enviar)"
+          rows="1"
+          maxlength="500">
+        </textarea>
+        <button class="btn-enviar" (click)="enviarMensaje()" [disabled]="!nuevoMensaje.trim() || enviando">
+          {{ enviando ? '...' : '▶' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ TAB: CARRERAS ══ -->
+  <div class="social-body carreras-tab" *ngIf="tabActiva === 'carreras'">
+    <div class="carreras-toolbar">
+      <p class="carreras-sub">Carreras abiertas a todos los pilotos en este circuito.</p>
+      <button class="btn-nueva-carrera" (click)="abrirModalCarrera()" *ngIf="idUsuario">
+        <i class="bi bi-plus-circle-fill"></i> Nueva carrera
+      </button>
+    </div>
+
+    <div class="carreras-vacio" *ngIf="carreras.length === 0">
+      <i class="bi bi-flag" style="font-size:2rem;opacity:0.3;"></i>
+      <p>No hay carreras programadas próximamente.</p>
+      <button class="btn-nueva-carrera" (click)="abrirModalCarrera()" *ngIf="idUsuario">
+        Organizar la primera
+      </button>
+    </div>
+
+    <div class="carreras-lista" *ngIf="carreras.length > 0">
+      <div class="carrera-card" *ngFor="let c of carreras">
+        <div class="carrera-fecha-bloque">
+          <span class="carrera-fecha-dia">{{ formatFecha(c.fecha_hora).split(' ')[0] }}</span>
+          <span class="carrera-fecha-mes">{{ formatFecha(c.fecha_hora).split(' ')[1] }}</span>
+          <span class="carrera-fecha-hora">{{ formatHora(c.fecha_hora) }}</span>
+        </div>
+        <div class="carrera-info">
+          <div class="carrera-titulo">{{ c.titulo }}</div>
+          <div class="carrera-desc" *ngIf="c.descripcion">{{ c.descripcion }}</div>
+          <div class="carrera-creador">Organizada por <strong>{{ c.username_creador }}</strong></div>
+          <!-- Inscritos -->
+          <div class="carrera-inscritos" *ngIf="inscritosDeCarrera(c.id).length > 0">
+            <div class="ci-avatares">
+              <div class="ci-avatar" *ngFor="let ins of inscritosDeCarrera(c.id).slice(0,5)" [title]="ins.username">
+                <img *ngIf="ins.foto_perfil" [src]="ins.foto_perfil" [alt]="ins.username">
+                <span *ngIf="!ins.foto_perfil">{{ ins.username.slice(0,2).toUpperCase() }}</span>
+              </div>
+              <span class="ci-mas" *ngIf="inscritosDeCarrera(c.id).length > 5">+{{ inscritosDeCarrera(c.id).length - 5 }}</span>
+            </div>
+            <span class="ci-count">{{ inscritosDeCarrera(c.id).length }} apuntado{{ inscritosDeCarrera(c.id).length !== 1 ? 's' : '' }}</span>
+          </div>
+        </div>
+        <!-- Botón apuntarse (solo si no es el creador) -->
+        <button class="btn-apuntarse"
+                *ngIf="idUsuario && c.id_usuario_creador !== idUsuario"
+                [class.apuntado]="yaApuntado(c.id)"
+                [disabled]="apuntandoCarreraId === c.id"
+                (click)="toggleInscripcion(c)"
+                [title]="yaApuntado(c.id) ? 'Desapuntarse' : 'Apuntarse a esta carrera'">
+          <ng-container *ngIf="apuntandoCarreraId !== c.id">
+            <i class="bi" [class.bi-person-check-fill]="yaApuntado(c.id)" [class.bi-person-plus-fill]="!yaApuntado(c.id)"></i>
+            {{ yaApuntado(c.id) ? 'Apuntado' : 'Apuntarse' }}
+          </ng-container>
+          <ng-container *ngIf="apuntandoCarreraId === c.id">...</ng-container>
+        </button>
+        <button class="btn-eliminar-carrera"
+                *ngIf="c.id_usuario_creador === idUsuario"
+                [disabled]="eliminandoCarreraId === c.id"
+                (click)="eliminarCarrera(c)"
+                title="Eliminar carrera">
+          <ng-container *ngIf="eliminandoCarreraId !== c.id"><i class="bi bi-trash3-fill"></i></ng-container>
+          <ng-container *ngIf="eliminandoCarreraId === c.id">...</ng-container>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ TAB: RESEÑAS ══ -->
+  <div class="social-body resenas-tab" *ngIf="tabActiva === 'resenas'">
+
+    <!-- FORMULARIO (si no ha reseñado o quiere editar) -->
+    <div class="resena-form-wrap" *ngIf="idUsuario">
+      <div class="resena-form-titulo">
+        <ng-container *ngIf="yaResene"><i class="bi bi-pencil-fill"></i> Tu reseña</ng-container>
+        <ng-container *ngIf="!yaResene"><i class="bi bi-pencil-square"></i> Escribe tu reseña</ng-container>
+      </div>
+
+      <!-- Estrellas de nota general -->
+      <div class="resena-stars-row">
+        <span class="resena-stars-label">Valoración</span>
+        <div class="resena-stars" (mouseleave)="miResena.notaHover = 0">
+          <span *ngFor="let s of [1,2,3,4,5]"
+                class="r-star" [class.activa]="starResenaActiva(miResena.notaHover, miResena.nota, s)"
+                (mouseover)="miResena.notaHover = s" (click)="miResena.nota = s">★</span>
+        </div>
+      </div>
+
+      <!-- Estrellas de asfalto -->
+      <div class="resena-stars-row">
+        <span class="resena-stars-label">Asfalto</span>
+        <div class="resena-stars" (mouseleave)="miResena.asfaltoHover = 0">
+          <span *ngFor="let s of [1,2,3,4,5]"
+                class="r-star asfalto" [class.activa]="starResenaActiva(miResena.asfaltoHover, miResena.asfalto, s)"
+                (mouseover)="miResena.asfaltoHover = s" (click)="miResena.asfalto = s">★</span>
+        </div>
+        <span class="resena-opcional">(opcional)</span>
+      </div>
+
+      <!-- Comentario -->
+      <textarea class="resena-textarea" [(ngModel)]="miResena.comentario"
+                placeholder="Cuenta tu experiencia en este circuito..." rows="3" maxlength="500"></textarea>
+
+      <div class="resena-form-acciones">
+        <button class="btn-eliminar-resena" *ngIf="yaResene" (click)="eliminarResena()">
+          <i class="bi bi-trash3-fill"></i> Eliminar
+        </button>
+        <button class="btn-publicar-resena"
+                (click)="publicarResena()"
+                [disabled]="!miResena.comentario.trim() || !miResena.nota || guardandoResena">
+          <ng-container *ngIf="!guardandoResena && yaResene"><i class="bi bi-floppy2-fill"></i> Actualizar</ng-container>
+          <ng-container *ngIf="!guardandoResena && !yaResene"><i class="bi bi-check-circle-fill"></i> Publicar</ng-container>
+          <ng-container *ngIf="guardandoResena">Guardando...</ng-container>
+        </button>
+      </div>
+      <div *ngIf="errorResena" style="color:#e10600;font-size:.85rem;margin-top:8px;">{{ errorResena }}</div>
+    </div>
+    <div class="resena-login-aviso" *ngIf="!idUsuario">
+      Inicia sesión para dejar una reseña.
+    </div>
+
+    <!-- LISTA DE RESEÑAS -->
+    <div class="resenas-vacio" *ngIf="!cargandoResenas && resenas.length === 0">
+      <i class="bi bi-star" style="font-size:2rem;opacity:0.3;"></i>
+      <p>Sé el primero en reseñar este circuito.</p>
+    </div>
+
+    <div class="resenas-lista" *ngIf="!cargandoResenas && resenas.length > 0">
+      <div class="resena-card" *ngFor="let r of resenas" [class.mia]="r.esMia">
+        <div class="resena-card-header">
+          <div class="resena-avatar">
+            <img *ngIf="r.foto_perfil" [src]="r.foto_perfil" [alt]="r.username" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+            <span *ngIf="!r.foto_perfil">{{ r.initials }}</span>
+          </div>
+          <div class="resena-meta">
+            <span class="resena-username">{{ r.username }}</span>
+            <span class="resena-fecha">{{ formatFecha(r.created_at) }}</span>
+          </div>
+          <div class="resena-nota-display">
+            <span *ngFor="let s of [1,2,3,4,5]" class="r-star-sm" [class.activa]="s <= r.nota">★</span>
+          </div>
+        </div>
+        <p class="resena-comentario">{{ r.comentario }}</p>
+        <div class="resena-asfalto" *ngIf="r.asfalto">
+          <span class="resena-asfalto-label">Asfalto:</span>
+          <span *ngFor="let s of [1,2,3,4,5]" class="r-star-sm asfalto-color" [class.activa]="s <= r.asfalto">★</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- LOADING -->
+<div class="social-loading" *ngIf="cargando">
+  <div class="loading-spinner"></div>
+  <p>Cargando circuito...</p>
+</div>
+
+<!-- ══ MODAL NUEVA CARRERA ══ -->
+<div class="modal-overlay" *ngIf="mostrarModalCarrera" (click)="cerrarModalCarrera()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <button class="modal-close" (click)="cerrarModalCarrera()">✕</button>
+    <h2 class="modal-titulo"><i class="bi bi-flag-fill"></i> Nueva Carrera</h2>
+    <p class="modal-sub">Organiza una carrera en <strong>{{ pista?.nombre }}</strong></p>
+
+    <div class="form-grupo">
+      <label>Nombre de la carrera *</label>
+      <input type="text" [(ngModel)]="nuevaCarrera.titulo" placeholder="Ej: Gran Prix de verano" maxlength="100" class="form-input">
+    </div>
+    <div class="form-grupo">
+      <label>Descripción (opcional)</label>
+      <textarea [(ngModel)]="nuevaCarrera.descripcion" placeholder="Detalles, categorías, requisitos..." rows="3" maxlength="300" class="form-textarea"></textarea>
+    </div>
+    <div class="form-grupo">
+      <label>Fecha y hora *</label>
+      <input type="datetime-local" [(ngModel)]="nuevaCarrera.fecha_hora" class="form-input">
+    </div>
+
+    <p class="modal-error" *ngIf="errorCarrera">{{ errorCarrera }}</p>
+
+    <div class="modal-acciones">
+      <button class="btn-cancelar-modal" (click)="cerrarModalCarrera()">Cancelar</button>
+      <button class="btn-crear-modal"
+              (click)="crearCarrera()"
+              [disabled]="!nuevaCarrera.titulo.trim() || !nuevaCarrera.fecha_hora || creandoCarrera">
+        <ng-container *ngIf="!creandoCarrera"><i class="bi bi-check-circle-fill"></i> Crear</ng-container>
+        <ng-container *ngIf="creandoCarrera">Creando...</ng-container>
+      </button>
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer>

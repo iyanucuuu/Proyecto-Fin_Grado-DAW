@@ -1,0 +1,191 @@
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+                url('/img/karts.jpg');
+    background-size: cover;
+    background-position: center;
+    padding: 20px;
+}
+
+.login-card, .card-reg, .confirm-card {
+    width: 100%;
+    background: rgba(49, 49, 49, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 40px;
+    border-radius: 15px;
+    border: 2px solid #e10600;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+    color: white;
+}
+
+.login-card { max-width: 400px; }
+.card-reg   { max-width: 520px; }
+
+/* ── Confirmación de email ─────────────────────────────────────── */
+.confirm-card {
+    max-width: 420px;
+    text-align: center;
+}
+
+.confirm-icon {
+    font-size: 4rem;
+    margin-bottom: 16px;
+}
+
+.confirm-card h3 {
+    background: linear-gradient(45deg, #e10600, #ff4444);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+}
+
+.confirm-card p {
+    color: #ccc;
+    line-height: 1.6;
+}
+
+.confirm-note {
+    font-size: 0.85rem;
+    color: #888 !important;
+    margin-top: 10px;
+}
+
+/* ── Inputs ────────────────────────────────────────────────────── */
+.form-control, .form-control option {
+    background: #1a1a1a;
+    border: 1px solid #444;
+    color: white !important;
+}
+
+.form-control:focus {
+    background: #1a1a1a;
+    border-color: #e10600;
+    box-shadow: 0 0 0 0.2rem rgba(225, 6, 0, 0.25);
+    color: white;
+}
+
+/* ── Wrapper de contraseña con botón ver/ocultar ───────────────── */
+.pass-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.pass-wrapper .form-control {
+    padding-right: 44px;
+}
+
+.pass-toggle {
+    position: absolute;
+    right: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    line-height: 1;
+    padding: 4px;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.pass-toggle:hover {
+    opacity: 1;
+}
+
+/* ── Barra de fuerza de contraseña ────────────────────────────── */
+.strength-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 6px;
+}
+
+.strength-fill {
+    flex: 1;
+    height: 100%;
+    border-radius: 3px;
+    transition: background 0.3s;
+}
+
+.strength-fill.weak   { background: #e10600; width: 33%; }
+.strength-fill.medium { background: #ff9900; width: 66%; }
+.strength-fill.strong { background: #2ecc71; width: 100%; }
+
+.strength-label {
+    font-size: 0.75rem;
+    color: #aaa;
+    white-space: nowrap;
+}
+
+/* ── Mensaje de error inline ──────────────────────────────────── */
+.error-alert {
+    background: rgba(225, 6, 0, 0.15);
+    border: 1px solid #e10600;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    color: #ff6b6b;
+    font-size: 0.9rem;
+}
+
+/* ── Spinner de carga ─────────────────────────────────────────── */
+.spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ── Títulos ──────────────────────────────────────────────────── */
+h3 {
+    background: linear-gradient(45deg, #e10600, #ff4444);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.toggle-link {
+    color: #ff4444;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.toggle-link:hover { text-decoration: underline; }
+
+/* ── RESPONSIVE MOBILE ────────────────────────────────────────── */
+@media (max-width: 480px) {
+    .auth-container {
+        padding: 16px;
+        align-items: flex-start;
+        padding-top: 30px;
+    }
+
+    .login-card,
+    .card-reg,
+    .confirm-card {
+        padding: 24px 20px;
+        border-radius: 12px;
+    }
+
+    h3 { font-size: 1.1rem; }
+
+    .confirm-icon { font-size: 3rem; }
+}

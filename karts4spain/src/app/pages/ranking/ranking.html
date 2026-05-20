@@ -1,0 +1,211 @@
+<app-header></app-header>
+
+<main class="ranking-page">
+
+  <!-- HERO -->
+  <section class="rank-hero">
+    <div class="rank-hero-inner">
+      <span class="rank-badge"><i class="bi bi-trophy-fill"></i> CLASIFICACION</span>
+      <h1 class="rank-title">Ranking de Pilotos</h1>
+      <p class="rank-sub">Clasificacion general por puntos acumulados en todas las carreras.</p>
+    </div>
+    <div class="rank-mia" *ngIf="miPosicion">
+      <div class="rank-mia-label">Tu posicion</div>
+      <div class="rank-mia-pos">#{{ miPosicion.posicion }}</div>
+      <div class="rank-mia-pts">{{ miPosicion.puntos_totales }} pts</div>
+    </div>
+  </section>
+
+  <!-- LOADING -->
+  <div class="rank-loading" *ngIf="cargando">
+    <div class="rank-spinner"></div>
+    <p>Cargando clasificacion...</p>
+  </div>
+
+  <ng-container *ngIf="!cargando">
+
+    <!-- PODIO TOP 3 -->
+    <div class="rank-podio" *ngIf="pilotos.length >= 1">
+      <!-- 2 -->
+      <div class="podio-slot plata" *ngIf="pilotos.length >= 2" (click)="abrirDetalle(pilotos[1])">
+        <div class="podio-avatar">
+          <img *ngIf="pilotos[1].foto_perfil" [src]="pilotos[1].foto_perfil" [alt]="pilotos[1].username">
+          <span *ngIf="!pilotos[1].foto_perfil">{{ pilotos[1].initials }}</span>
+        </div>
+        <div class="podio-nombre">{{ pilotos[1].username }}</div>
+        <div class="podio-pts">{{ pilotos[1].puntos_totales }} pts</div>
+        <div class="podio-bloque plata-bloque">2</div>
+      </div>
+      <!-- 1 -->
+      <div class="podio-slot oro" (click)="abrirDetalle(pilotos[0])">
+        <div class="podio-corona">&#128081;</div>
+        <div class="podio-avatar grande">
+          <img *ngIf="pilotos[0].foto_perfil" [src]="pilotos[0].foto_perfil" [alt]="pilotos[0].username">
+          <span *ngIf="!pilotos[0].foto_perfil">{{ pilotos[0].initials }}</span>
+        </div>
+        <div class="podio-nombre">{{ pilotos[0].username }}</div>
+        <div class="podio-pts">{{ pilotos[0].puntos_totales }} pts</div>
+        <div class="podio-bloque oro-bloque">1</div>
+      </div>
+      <!-- 3 -->
+      <div class="podio-slot bronce" *ngIf="pilotos.length >= 3" (click)="abrirDetalle(pilotos[2])">
+        <div class="podio-avatar">
+          <img *ngIf="pilotos[2].foto_perfil" [src]="pilotos[2].foto_perfil" [alt]="pilotos[2].username">
+          <span *ngIf="!pilotos[2].foto_perfil">{{ pilotos[2].initials }}</span>
+        </div>
+        <div class="podio-nombre">{{ pilotos[2].username }}</div>
+        <div class="podio-pts">{{ pilotos[2].puntos_totales }} pts</div>
+        <div class="podio-bloque bronce-bloque">3</div>
+      </div>
+    </div>
+
+    <!-- FILTROS -->
+    <div class="rank-filtros" *ngIf="pilotos.length > 0">
+      <div class="rank-search-wrap">
+        <i class="bi bi-search rank-search-ico"></i>
+        <input type="text" class="rank-input" placeholder="Buscar piloto..."
+               [(ngModel)]="busqueda" (ngModelChange)="aplicarFiltros()">
+      </div>
+      <select class="rank-select" [(ngModel)]="filtroComunidad" (ngModelChange)="aplicarFiltros()">
+        <option value="">Toda Espana</option>
+        <option *ngFor="let c of comunidades" [value]="c">{{ c }}</option>
+      </select>
+      <button class="rank-btn-reset" (click)="resetFiltros()" *ngIf="busqueda || filtroComunidad">
+        <i class="bi bi-x-lg"></i> Limpiar
+      </button>
+    </div>
+
+    <!-- TABLA -->
+    <div class="rank-tabla-wrap" *ngIf="pilotosFiltrados.length > 0">
+      <table class="rank-tabla">
+        <thead>
+          <tr>
+            <th class="col-pos">Pos.</th>
+            <th class="col-piloto">Piloto</th>
+            <th class="col-num">Carreras</th>
+            <th class="col-num">Victorias</th>
+            <th class="col-num">Podios</th>
+            <th class="col-pts">Puntos</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of pilotosFiltrados"
+              class="rank-fila"
+              [class.fila-yo]="esMiPiloto(p)"
+              [class.fila-top3]="p.posicion <= 3"
+              (click)="abrirDetalle(p)">
+            <td class="col-pos">
+              <span class="pos-circulo" [class]="medallaClase(p.posicion)">
+                <ng-container *ngIf="p.posicion > 3">{{ p.posicion }}</ng-container>
+                <i class="bi bi-trophy-fill" *ngIf="p.posicion === 1"></i>
+                <i class="bi bi-award-fill"  *ngIf="p.posicion === 2"></i>
+                <i class="bi bi-award-fill"  *ngIf="p.posicion === 3"></i>
+              </span>
+            </td>
+            <td class="col-piloto">
+              <div class="fila-avatar">
+                <img *ngIf="p.foto_perfil" [src]="p.foto_perfil" [alt]="p.username">
+                <span *ngIf="!p.foto_perfil">{{ p.initials }}</span>
+              </div>
+              <div class="fila-info">
+                <span class="fila-nombre">{{ p.username }}<span class="fila-yo-tag" *ngIf="esMiPiloto(p)"> tu</span></span>
+                <span class="fila-ccaa" *ngIf="p.comunidad_autonoma">{{ p.comunidad_autonoma }}</span>
+              </div>
+            </td>
+            <td class="col-num">{{ p.carreras_corridas }}</td>
+            <td class="col-num">
+              <span class="vic-num" *ngIf="p.victorias > 0">
+                <i class="bi bi-flag-fill" style="color:#e8b400;font-size:0.7rem;"></i> {{ p.victorias }}
+              </span>
+              <span class="dim" *ngIf="p.victorias === 0">-</span>
+            </td>
+            <td class="col-num">
+              <span *ngIf="p.podios > 0">{{ p.podios }}</span>
+              <span class="dim" *ngIf="p.podios === 0">-</span>
+            </td>
+            <td class="col-pts"><span class="pts-chip">{{ p.puntos_totales }}</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Vacio -->
+    <div class="rank-vacio" *ngIf="pilotos.length === 0">
+      <i class="bi bi-trophy" style="font-size:3rem;opacity:0.2;"></i>
+      <h3>Sin clasificacion todavia</h3>
+      <p>Cuando se guarden los resultados de las primeras carreras, apareceran aqui.</p>
+    </div>
+
+    <div class="rank-sin-filtro" *ngIf="pilotos.length > 0 && pilotosFiltrados.length === 0">
+      <p>Ningun piloto coincide con la busqueda.</p>
+      <button class="rank-btn-reset" (click)="resetFiltros()">Ver todos</button>
+    </div>
+
+  </ng-container>
+</main>
+
+<!-- MODAL DETALLE PILOTO -->
+<div class="modal-overlay" *ngIf="mostrarDetalle" (click)="cerrarDetalle()">
+  <div class="modal-box modal-detalle" (click)="$event.stopPropagation()">
+    <button class="modal-close" (click)="cerrarDetalle()">&#x2715;</button>
+    <ng-container *ngIf="pilotoDetalle">
+      <div class="det-header">
+        <div class="det-avatar" [class]="medallaClase(pilotoDetalle.posicion)">
+          <img *ngIf="pilotoDetalle.foto_perfil" [src]="pilotoDetalle.foto_perfil" [alt]="pilotoDetalle.username">
+          <span *ngIf="!pilotoDetalle.foto_perfil">{{ pilotoDetalle.initials }}</span>
+        </div>
+        <div class="det-info">
+          <h2 class="det-nombre">{{ pilotoDetalle.username }}</h2>
+          <p class="det-ccaa" *ngIf="pilotoDetalle.comunidad_autonoma">
+            <i class="bi bi-geo-alt-fill"></i> {{ pilotoDetalle.comunidad_autonoma }}
+          </p>
+          <div class="det-pos-badge" [class]="medallaClase(pilotoDetalle.posicion)">
+            #{{ pilotoDetalle.posicion }} del ranking
+          </div>
+        </div>
+      </div>
+
+      <div class="det-stats">
+        <div class="det-stat">
+          <span class="det-stat-val">{{ pilotoDetalle.puntos_totales }}</span>
+          <span class="det-stat-lbl">Puntos</span>
+        </div>
+        <div class="det-stat">
+          <span class="det-stat-val">{{ pilotoDetalle.carreras_corridas }}</span>
+          <span class="det-stat-lbl">Carreras</span>
+        </div>
+        <div class="det-stat">
+          <span class="det-stat-val" style="color:#e8b400;">{{ pilotoDetalle.victorias }}</span>
+          <span class="det-stat-lbl">Victorias</span>
+        </div>
+        <div class="det-stat">
+          <span class="det-stat-val">{{ pilotoDetalle.podios }}</span>
+          <span class="det-stat-lbl">Podios</span>
+        </div>
+      </div>
+
+      <h3 class="det-hist-titulo"><i class="bi bi-clock-history"></i> Historial de carreras</h3>
+
+      <div class="det-loading" *ngIf="cargandoHistorial">
+        <div class="rank-spinner"></div>
+      </div>
+
+      <div class="det-vacio" *ngIf="!cargandoHistorial && historialCarreras.length === 0">
+        <p>Sin carreras registradas todavia.</p>
+      </div>
+
+      <div class="det-historial" *ngIf="!cargandoHistorial && historialCarreras.length > 0">
+        <div class="det-hist-fila" *ngFor="let r of historialCarreras">
+          <span class="dhf-pos" [class]="medallaClase(r.posicion)">{{ r.posicion }}</span>
+          <div class="dhf-info">
+            <span class="dhf-titulo">{{ r.titulo_carrera }}</span>
+            <span class="dhf-pista">{{ r.nombre_pista }} - {{ formatFecha(r.created_at) }}</span>
+          </div>
+          <span class="dhf-pts">+{{ r.puntos }} pts</span>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>
+
+<app-footer></app-footer>

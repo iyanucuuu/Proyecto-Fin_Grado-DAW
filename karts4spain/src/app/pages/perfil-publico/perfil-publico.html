@@ -1,0 +1,148 @@
+<app-header></app-header>
+
+<!-- ══ CARGANDO ════════════════════════════════════════════════════════════════ -->
+<div *ngIf="cargando" class="perfil-publico-layout skeleton-layout">
+  <aside class="sidebar-pub skeleton-card">
+    <div class="sk-avatar-big"></div>
+    <div class="sk-line w60" style="margin: 16px auto 8px"></div>
+    <div class="sk-line w40" style="margin: 0 auto 8px"></div>
+    <div class="sk-line w30" style="margin: 0 auto"></div>
+  </aside>
+  <div class="main-pub">
+    <div class="section-pub skeleton-card">
+      <div class="sk-title"></div>
+      <div class="sk-stats-row">
+        <div class="sk-stat" *ngFor="let i of [1,2,3,4]"></div>
+      </div>
+    </div>
+    <div class="section-pub skeleton-card">
+      <div class="sk-title"></div>
+      <div class="sk-logros">
+        <div class="sk-logro" *ngFor="let i of [1,2,3,4,5,6]"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ NO ENCONTRADO ══════════════════════════════════════════════════════════ -->
+<div *ngIf="!cargando && noEncontrado" class="not-found-wrap">
+  <i class="bi bi-person-x-fill not-found-icon"></i>
+  <h2>Piloto no encontrado</h2>
+  <p>Puede que ese usuario no exista o haya cambiado su nombre.</p>
+  <button class="btn-volver" routerLink="/inicio">← Volver al inicio</button>
+</div>
+
+<!-- ══ PERFIL PÚBLICO ══════════════════════════════════════════════════════════ -->
+<main *ngIf="!cargando && !noEncontrado && usuario" class="perfil-publico-layout">
+
+  <!-- ── SIDEBAR ──────────────────────────────────────────────────────────── -->
+  <aside class="sidebar-pub">
+    <div class="avatar-pub">
+      <img *ngIf="usuario.foto_perfil" [src]="usuario.foto_perfil" [alt]="usuario.username">
+      <span *ngIf="!usuario.foto_perfil">{{ initials }}</span>
+    </div>
+
+    <h2 class="pub-username">{{ usuario.username }}</h2>
+    <p class="pub-email">{{ usuario.email || '' }}</p>
+
+    <div class="badge-comunidad" *ngIf="usuario.comunidad_autonoma">
+      {{ usuario.comunidad_autonoma }}
+    </div>
+
+    <p class="pub-fecha" *ngIf="usuario.dia_creacion">
+      <i class="bi bi-calendar3"></i>
+      Piloto desde {{ usuario.dia_creacion | date:'dd/MM/yyyy' }}
+    </p>
+
+    <!-- Escudería -->
+    <div class="pub-escuderia" *ngIf="nombreEscuderia">
+      <span class="pub-escuderia-logo">{{ logoEscuderia }}</span>
+      <span class="pub-escuderia-nombre">{{ nombreEscuderia }}</span>
+    </div>
+
+    <!-- Badge logros -->
+    <div class="logros-badge" *ngIf="logros.length > 0">
+      <i class="bi bi-trophy-fill"></i>
+      <span>{{ logros.length }} logro{{ logros.length !== 1 ? 's' : '' }}</span>
+    </div>
+
+    <!-- Botón de amistad (sólo si el visitante está logueado y es distinto del perfil) -->
+    <div class="pub-amistad" *ngIf="idUsuarioLogueado">
+      <div *ngIf="yaAmigos" class="pub-ya-amigos">
+        <i class="bi bi-people-fill"></i> Ya sois amigos
+      </div>
+      <button *ngIf="!yaAmigos && !solicitado"
+              class="btn-solicitar"
+              (click)="enviarSolicitud()"
+              [disabled]="enviandoSolicitud">
+        <i class="bi bi-person-plus-fill"></i>
+        {{ enviandoSolicitud ? 'Enviando…' : 'Añadir como amigo' }}
+      </button>
+      <div *ngIf="!yaAmigos && solicitado" class="pub-solicitado">
+        <i class="bi bi-hourglass-split"></i> Solicitud enviada
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── CONTENIDO PRINCIPAL ──────────────────────────────────────────────── -->
+  <div class="main-pub">
+
+    <!-- ESTADÍSTICAS -->
+    <section class="section-pub" *ngIf="stats">
+      <h3 class="section-title-pub"><i class="bi bi-bar-chart-fill"></i> ESTADÍSTICAS</h3>
+      <div class="stats-grid">
+        <div class="stat-box">
+          <span class="stat-num">{{ stats.puntos_totales }}</span>
+          <span class="stat-label">Puntos</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num">{{ stats.carreras_corridas }}</span>
+          <span class="stat-label">Carreras</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num">{{ stats.victorias }}</span>
+          <span class="stat-label">Victorias</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num">{{ stats.podios }}</span>
+          <span class="stat-label">Podios</span>
+        </div>
+        <div class="stat-box stat-box-pos" *ngIf="stats.posicion_actual > 0">
+          <span class="stat-num">#{{ stats.posicion_actual }}</span>
+          <span class="stat-label">Ranking</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-pub" *ngIf="!stats">
+      <h3 class="section-title-pub"><i class="bi bi-bar-chart-fill"></i> ESTADÍSTICAS</h3>
+      <p class="pub-muted">Este piloto aún no ha disputado ninguna carrera.</p>
+    </section>
+
+    <!-- LOGROS -->
+    <section class="section-pub">
+      <h3 class="section-title-pub"><i class="bi bi-trophy-fill"></i> LOGROS DESBLOQUEADOS</h3>
+
+      <div *ngIf="logros.length > 0" class="logros-pub-grid">
+        <div *ngFor="let logro of logros" class="logro-pub" [title]="logro.nombre">
+          <img *ngIf="logro.imagen_insignia"
+               [src]="logro.imagen_insignia"
+               [alt]="logro.nombre"
+               class="logro-pub-img">
+          <i *ngIf="!logro.imagen_insignia" class="bi bi-award-fill logro-pub-icon"></i>
+          <p class="logro-pub-nombre">{{ logro.nombre }}</p>
+          <p class="logro-pub-fecha" *ngIf="logro.fecha_obtencion">
+            {{ logro.fecha_obtencion | date:'dd/MM/yyyy' }}
+          </p>
+        </div>
+      </div>
+
+      <p *ngIf="logros.length === 0" class="pub-muted">
+        Este piloto aún no ha desbloqueado ningún logro.
+      </p>
+    </section>
+
+  </div>
+</main>
+
+<app-footer></app-footer>
