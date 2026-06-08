@@ -22,8 +22,9 @@ backend/karts4spain-backend/target/
 # ── Repositorio Git antiguo (no incluir como submódulo) ───────────────────────
 git/
 
-# ── Documentación / Memoria del TFG (archivos Word) ──────────────────────────
+# ── Documentación / Memoria y presentación del TFG (pesados, fuera del repo) ──
 *.docx
+*.pptx
 *.~lock.*
 
 # ── IDEs ──────────────────────────────────────────────────────────────────────
