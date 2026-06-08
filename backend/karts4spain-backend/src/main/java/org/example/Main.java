@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
-@EntityScan("org.example.entities") // Asegúrate de que tus entidades estén en este paquete
+@EntityScan("org.example.entities")
 public class Main {
     public static void main(String[] args) {
         SpringApplication.run(Main.class, args);

@@ -279,7 +279,7 @@ export class Amigos {
     } finally {
       usuario.enviandoSolicitud = false;
     }
-  }
+  }   
 
   cambiarTab(tab: 'amigos' | 'recibidas' | 'enviadas' | 'conocer'): void {
     this.tabActiva = tab;

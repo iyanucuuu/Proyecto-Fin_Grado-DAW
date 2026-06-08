@@ -1,12 +1,17 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
+import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-    provideHttpClient()
+    provideHttpClient(),
+    // Reutiliza el HTML renderizado en el servidor (SSR) en lugar de descartarlo
+    // y volver a renderizar en el cliente, y conserva los eventos del usuario
+    // (clics, etc.) ocurridos antes de que la app termine de hidratarse.
+    provideClientHydration(withEventReplay())
   ]
 };
